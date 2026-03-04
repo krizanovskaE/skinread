@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkinRead — Know What You Put On Your Skin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0C0C0C;--bg2:#141414;--card:#1A1A1A;--card2:#222;--pink:#FF006E;--cyan:#00F5A0;--purple:#B45FFF;--orange:#FF7A00;--red:#FF3B3B;--text:#F0F0F0;--text2:#A0A0A0;--text3:#666;--border:#2A2A2A;--border2:#333;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+    .phase{display:none;} .phase.active{display:block;}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(12,12,12,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
+    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-btn{background:transparent;color:var(--text2);border:1px solid var(--border);padding:8px 20px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;font-size:.85rem;transition:border-color .2s,color .2s;}
+    .nav-btn:hover{border-color:var(--text2);color:var(--text);}
+    .nav-cta{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:9px 22px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;cursor:pointer;font-size:.85rem;transition:opacity .2s;}
+    .nav-cta:hover{opacity:.85;}
+    .user-chip{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);padding:6px 14px 6px 8px;border-radius:50px;cursor:pointer;transition:border-color .2s;}
+    .user-chip:hover{border-color:var(--cyan);}
+    .user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;}
+    .user-chip-name{font-size:.82rem;font-weight:600;color:var(--text);}
+
+    /* AUTH MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:40px;width:100%;max-width:440px;position:relative;}
+    .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;line-height:1;}
+    .modal-close:hover{color:var(--text);}
+    .modal h2{font-size:1.8rem;font-weight:800;margin-bottom:6px;}
+    .modal-sub{color:var(--text2);font-size:.9rem;margin-bottom:28px;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;font-size:.82rem;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em;}
+    .form-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;}
+    .form-group input:focus{border-color:var(--pink);}
+    .form-error{color:var(--pink);font-size:.82rem;margin-top:6px;display:none;}
+    .form-error.show{display:block;}
+    .modal-submit{width:100%;background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:15px;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;margin-top:6px;transition:opacity .2s;}
+    .modal-submit:hover{opacity:.88;}
+    .modal-switch{text-align:center;margin-top:18px;color:var(--text3);font-size:.88rem;}
+    .modal-switch a{color:var(--cyan);cursor:pointer;text-decoration:none;}
+    .modal-switch a:hover{text-decoration:underline;}
+    .modal-note{background:rgba(255,122,0,.08);border:1px solid rgba(255,122,0,.25);border-radius:10px;padding:12px 14px;font-size:.8rem;color:var(--orange);margin-bottom:20px;}
+
+    /* LANDING */
+    .hero{padding:150px 40px 90px;max-width:1100px;margin:0 auto;text-align:center;}
+    .hero-badge{display:inline-block;background:rgba(255,0,110,.12);border:1px solid rgba(255,0,110,.3);color:var(--pink);padding:6px 18px;border-radius:50px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px;}
+    .hero h1{font-size:clamp(2.6rem,6.5vw,5rem);font-weight:800;line-height:1.06;margin-bottom:22px;}
+    .hero h1 span{background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero p{font-size:1.1rem;color:var(--text2);max-width:560px;margin:0 auto 44px;line-height:1.7;}
+    .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:15px 38px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,0,110,.35);}
+    .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border2);padding:15px 34px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;cursor:pointer;transition:border-color .2s;}
+    .btn-secondary:hover{border-color:var(--cyan);}
+    .features-grid{max-width:1100px;margin:70px auto 0;padding:0 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+    .feat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;transition:border-color .2s;}
+    .feat-card:hover{border-color:var(--pink);}
+    .feat-icon{font-size:1.9rem;margin-bottom:14px;}
+    .feat-card h3{font-size:1rem;margin-bottom:8px;}
+    .feat-card p{color:var(--text2);font-size:.87rem;line-height:1.6;}
+    .hero-footer{text-align:center;padding:50px 40px;color:var(--text3);font-size:.83rem;}
+
+    /* QUIZ */
+    .quiz-wrap{max-width:700px;margin:0 auto;padding:120px 40px 80px;}
+    .quiz-header{text-align:center;margin-bottom:44px;}
+    .quiz-header h2{font-size:2.2rem;font-weight:800;margin-bottom:10px;}
+    .quiz-header p{color:var(--text2);}
+    .progress-bar{width:100%;height:4px;background:var(--border);border-radius:4px;margin-bottom:36px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--cyan));border-radius:4px;transition:width .4s ease;}
+    .q-counter{text-align:center;font-size:.82rem;color:var(--text3);margin-bottom:28px;font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+    .q-icon{font-size:2.3rem;text-align:center;margin-bottom:14px;}
+    .q-text{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;text-align:center;margin-bottom:28px;line-height:1.4;}
+    .q-options{display:flex;flex-direction:column;gap:12px;}
+    .q-option{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .2s,background .2s;}
+    .q-option:hover{border-color:var(--pink);background:rgba(255,0,110,.06);}
+    .q-option.selected{border-color:var(--cyan);background:rgba(0,245,160,.08);}
+    .q-option-emoji{font-size:1.5rem;flex-shrink:0;}
+    .q-option-text{font-size:.95rem;}
+    .quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:30px;}
+    .btn-back{background:transparent;color:var(--text2);border:1px solid var(--border);padding:11px 26px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;font-size:.9rem;transition:border-color .2s;}
+    .btn-back:hover{border-color:var(--text2);}
+    .btn-next{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:13px 34px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;cursor:pointer;font-size:.95rem;transition:opacity .2s;}
+    .btn-next:hover{opacity:.88;}
+    .btn-next:disabled{opacity:.32;cursor:not-allowed;}
+
+    /* RESULT */
+    .result-wrap{max-width:700px;margin:0 auto;padding:120px 40px 80px;text-align:center;}
+    .result-badge{display:inline-block;background:rgba(0,245,160,.12);border:1px solid rgba(0,245,160,.3);color:var(--cyan);padding:5px 16px;border-radius:50px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;}
+    .result-emoji{font-size:4.5rem;margin-bottom:16px;display:block;}
+    .result-name{font-size:2.6rem;font-weight:800;margin-bottom:10px;}
+    .result-tagline{font-size:1rem;color:var(--cyan);margin-bottom:14px;font-style:italic;}
+    .result-desc{color:var(--text2);line-height:1.7;margin-bottom:36px;font-size:.95rem;}
+    .result-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;text-align:left;margin-bottom:36px;}
+    .result-col{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;}
+    .result-col h4{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+    .result-col.look h4{color:var(--cyan);}
+    .result-col.avoid h4{color:var(--pink);}
+    .result-col ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+    .result-col ul li{font-size:.87rem;color:var(--text2);display:flex;align-items:baseline;gap:7px;}
+    .result-col ul li::before{content:'→';color:var(--text3);flex-shrink:0;}
+    .result-tips{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:left;margin-bottom:36px;}
+    .result-tips h4{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:12px;}
+    .result-tips ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+    .result-tips ul li{font-size:.87rem;color:var(--text2);}
+    .result-tips ul li::before{content:'✦ ';color:var(--purple);}
+    .result-cta{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:16px 44px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+    .result-cta:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,0,110,.35);}
+    .retake-link{display:block;margin-top:14px;color:var(--text3);font-size:.87rem;cursor:pointer;text-decoration:underline;}
+
+    /* ANALYZER */
+    .analyzer-wrap{max-width:880px;margin:0 auto;padding:120px 40px 80px;}
+    .analyzer-header{text-align:center;margin-bottom:36px;}
+    .analyzer-header h2{font-size:2.2rem;font-weight:800;margin-bottom:10px;}
+    .analyzer-header p{color:var(--text2);}
+    .skin-banner{display:none;background:linear-gradient(135deg,rgba(0,245,160,.08),rgba(180,95,255,.08));border:1px solid rgba(0,245,160,.22);border-radius:14px;padding:14px 22px;margin-bottom:24px;align-items:center;gap:12px;}
+    .skin-banner.visible{display:flex;}
+    .skin-banner-emoji{font-size:1.7rem;}
+    .skin-banner-text{flex:1;}
+    .skin-banner-text strong{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;color:var(--cyan);}
+    .skin-banner-text span{display:block;font-size:.82rem;color:var(--text2);margin-top:2px;}
+    .skin-banner-change{color:var(--text3);font-size:.78rem;cursor:pointer;text-decoration:underline;}
+    .input-box{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:26px;margin-bottom:20px;transition:border-color .2s;}
+    .input-box:focus-within{border-color:var(--pink);}
+    .input-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+    .input-col{flex:1;min-width:200px;}
+    .input-box label{display:block;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;}
+    .product-name-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s;}
+    .product-name-input:focus{border-color:var(--pink);}
+    textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.92rem;line-height:1.7;resize:none;min-height:130px;}
+    textarea::placeholder{color:var(--text3);}
+    .analyze-btn{width:100%;background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:17px;border-radius:14px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:36px;}
+    .analyze-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,0,110,.3);}
+    #results-section{display:none;}
+    .results-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px;}
+    .results-header h3{font-size:1.3rem;font-weight:700;}
+    .results-actions{display:flex;gap:10px;align-items:center;}
+    .save-btn{background:linear-gradient(135deg,rgba(0,245,160,.15),rgba(180,95,255,.15));border:1px solid rgba(0,245,160,.35);color:var(--cyan);padding:9px 20px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:opacity .2s;}
+    .save-btn:hover{opacity:.8;}
+    .save-btn.saved{background:rgba(0,245,160,.2);border-color:var(--cyan);}
+    .clear-btn{background:transparent;color:var(--text3);border:1px solid var(--border);padding:8px 18px;border-radius:50px;font-size:.82rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;}
+    .clear-btn:hover{border-color:var(--text2);}
+    .summary-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:30px;}
+    .score-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+    .score-card .s-label{font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
+    .score-bar-wrap{height:5px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:7px;}
+    .score-bar{height:100%;border-radius:6px;transition:width 1s ease;}
+    .score-pct{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;}
+    .ingredient-list{display:flex;flex-direction:column;gap:14px;}
+    .ing-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s;}
+    .ing-card.flag-red{border-left:3px solid var(--pink);}
+    .ing-card.flag-yellow{border-left:3px solid var(--orange);}
+    .ing-card.flag-green{border-left:3px solid var(--cyan);}
+    .ing-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+    .ing-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.97rem;}
+    .ing-inci{display:block;font-size:.76rem;color:var(--text3);margin-top:2px;font-style:italic;}
+    .ing-flag{font-size:.72rem;font-weight:700;padding:3px 11px;border-radius:50px;white-space:nowrap;flex-shrink:0;}
+    .ing-flag.red{background:rgba(255,0,110,.15);color:var(--pink);}
+    .ing-flag.yellow{background:rgba(255,122,0,.15);color:var(--orange);}
+    .ing-flag.green{background:rgba(0,245,160,.1);color:var(--cyan);}
+    .ing-what{font-size:.88rem;color:var(--text2);margin-bottom:12px;line-height:1.6;}
+    .ing-meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
+    .goodfor-tag{font-size:.72rem;padding:3px 10px;border-radius:50px;background:var(--bg2);border:1px solid var(--border);color:var(--text3);}
+    .goodfor-tag.highlight{background:rgba(0,245,160,.1);border-color:rgba(0,245,160,.38);color:var(--cyan);font-weight:700;}
+    .compat-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+    .compat-badge{font-size:.7rem;padding:3px 10px;border-radius:50px;font-weight:600;}
+    .compat-badge.compat-great{background:rgba(0,245,160,.1);color:var(--cyan);}
+    .compat-badge.compat-ok{background:rgba(255,122,0,.1);color:var(--orange);}
+    .compat-badge.compat-avoid{background:rgba(255,0,110,.1);color:var(--pink);}
+    .compat-badge.your-type{outline:2px solid currentColor;outline-offset:1px;font-weight:800;}
+    .your-pill{display:inline-block;font-size:.62rem;background:var(--cyan);color:#000;border-radius:50px;padding:1px 6px;font-weight:800;margin-left:4px;vertical-align:middle;}
+    .unknown-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:18px 22px;display:flex;align-items:center;gap:14px;}
+    .unknown-card .uk-emoji{font-size:1.3rem;}
+    .unknown-card .uk-text{font-size:.88rem;color:var(--text2);}
+    .unknown-card .uk-name{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--text);display:block;margin-bottom:2px;}
+    .login-prompt{text-align:center;padding:16px;background:rgba(255,0,110,.06);border:1px solid rgba(255,0,110,.2);border-radius:12px;margin-bottom:20px;font-size:.88rem;color:var(--text2);}
+    .login-prompt a{color:var(--pink);cursor:pointer;font-weight:600;}
+
+    /* DASHBOARD */
+    .dashboard-wrap{max-width:1060px;margin:0 auto;padding:110px 40px 80px;}
+    .dashboard-header{margin-bottom:36px;}
+    .dashboard-header h2{font-size:2rem;font-weight:800;margin-bottom:6px;}
+    .dashboard-header p{color:var(--text2);font-size:.92rem;}
+    .dash-tabs{display:flex;gap:8px;margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:0;}
+    .dash-tab{background:none;border:none;color:var(--text3);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;padding:12px 20px 14px;cursor:pointer;position:relative;transition:color .2s;}
+    .dash-tab:hover{color:var(--text2);}
+    .dash-tab.active{color:var(--text);}
+    .dash-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan));border-radius:2px 2px 0 0;}
+    .tab-panel{display:none;} .tab-panel.active{display:block;}
+
+    /* WISHLIST */
+    .wl-empty{text-align:center;padding:60px 20px;color:var(--text3);}
+    .wl-empty .wl-icon{font-size:3rem;margin-bottom:16px;}
+    .wl-empty h3{font-size:1.2rem;color:var(--text2);margin-bottom:8px;}
+    .wl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s;}
+    .wl-card:hover{border-color:var(--border2);}
+    .wl-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+    .wl-card-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;}
+    .wl-card-date{font-size:.74rem;color:var(--text3);}
+    .wl-card-stats{display:flex;gap:8px;flex-wrap:wrap;}
+    .wl-stat{font-size:.74rem;padding:3px 10px;border-radius:50px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);}
+    .wl-stat.red{background:rgba(255,0,110,.1);border-color:rgba(255,0,110,.3);color:var(--pink);}
+    .wl-stat.green{background:rgba(0,245,160,.08);border-color:rgba(0,245,160,.28);color:var(--cyan);}
+    .wl-card-actions{display:flex;gap:8px;margin-top:auto;}
+    .wl-action{flex:1;padding:9px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;text-align:center;transition:opacity .2s;}
+    .wl-action:hover{opacity:.8;}
+    .wl-action.primary{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;}
+    .wl-action.secondary{background:transparent;color:var(--text3);border:1px solid var(--border);}
+    .wl-action.secondary:hover{border-color:var(--pink);color:var(--pink);}
+
+    /* ROUTINE BUILDER */
+    .routine-intro{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:28px;font-size:.88rem;color:var(--text2);line-height:1.6;}
+    .routine-intro strong{color:var(--text);}
+    .routine-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+    .routine-slot{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;}
+    .routine-slot-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+    .routine-slot-icon{font-size:1.5rem;}
+    .routine-slot-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;}
+    .routine-slot-sub{font-size:.78rem;color:var(--text3);margin-top:2px;}
+    .routine-product-list{display:flex;flex-direction:column;gap:10px;min-height:80px;}
+    .routine-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .routine-item-name{font-size:.88rem;font-weight:600;flex:1;}
+    .routine-item-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.9rem;padding:2px 6px;border-radius:6px;transition:color .2s;}
+    .routine-item-remove:hover{color:var(--pink);}
+    .routine-empty{text-align:center;padding:20px;color:var(--text3);font-size:.85rem;border:1px dashed var(--border);border-radius:10px;}
+    .add-to-routine{margin-top:14px;}
+    .add-to-routine select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:.88rem;outline:none;cursor:pointer;}
+    .add-to-routine select:focus{border-color:var(--pink);}
+    .add-btn{width:100%;margin-top:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);padding:9px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:border-color .2s,color .2s;}
+    .add-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+    .clash-section{margin-top:8px;}
+    .clash-section h3{font-size:1.1rem;font-weight:700;margin-bottom:14px;}
+    .no-clashes{background:rgba(0,245,160,.07);border:1px solid rgba(0,245,160,.22);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;font-size:.88rem;color:var(--cyan);}
+    .clash-card{background:var(--card);border-radius:12px;padding:18px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+    .clash-card.high{border:1px solid rgba(255,0,110,.4);background:rgba(255,0,110,.05);}
+    .clash-card.medium{border:1px solid rgba(255,122,0,.35);background:rgba(255,122,0,.05);}
+    .clash-card.low{border:1px solid rgba(255,200,0,.3);background:rgba(255,200,0,.04);}
+    .clash-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
+    .clash-body{}
+    .clash-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:4px;}
+    .clash-note{font-size:.84rem;color:var(--text2);line-height:1.5;}
+    .clash-severity{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:50px;margin-left:8px;vertical-align:middle;}
+    .clash-severity.high{background:rgba(255,0,110,.2);color:var(--pink);}
+    .clash-severity.medium{background:rgba(255,122,0,.2);color:var(--orange);}
+    .clash-severity.low{background:rgba(255,200,0,.15);color:#ffd600;}
+
+    @media(max-width:640px){
+      nav{padding:14px 18px;}
+      .hero{padding:110px 18px 60px;}
+      .hero h1{font-size:2.2rem;}
+      .quiz-wrap,.result-wrap,.analyzer-wrap,.dashboard-wrap{padding:90px 18px 60px;}
+      .result-cols{grid-template-columns:1fr;}
+      .features-grid{padding:0 18px;}
+      .routine-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <span class="logo" onclick="showPhase('phase-landing')">SkinRead</span>
+  <div class="nav-right">
+    <div id="nav-logged-out" style="display:flex;gap:10px;">
+      <button class="nav-btn" onclick="openAuth('login')">Sign In</button>
+      <button class="nav-cta" onclick="openAuth('signup')">Sign Up Free</button>
+    </div>
+    <div id="nav-logged-in" style="display:none;gap:10px;align-items:center;">
+      <button class="nav-btn" onclick="showPhase('phase-analyzer')">Analyzer</button>
+      <div class="user-chip" onclick="showPhase('phase-dashboard')">
+        <div class="user-avatar" id="nav-avatar">?</div>
+        <span class="user-chip-name" id="nav-name">My Account</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <div class="modal-note">🔒 Demo mode: data stored locally in your browser only. No real server.</div>
+    <h2 id="auth-title">Sign In</h2>
+    <p class="modal-sub" id="auth-sub">Welcome back — your wishlist is waiting.</p>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="form-group" id="auth-name-group" style="display:none;">
+      <label>Your Name</label>
+      <input type="text" id="auth-name" placeholder="e.g. Elizabete">
+    </div>
+    <div class="form-error" id="auth-error"></div>
+    <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign In</button>
+    <div class="modal-switch" id="auth-switch">
+      Don't have an account? <a onclick="toggleAuthMode()">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PHASE: LANDING ══ -->
+<div id="phase-landing" class="phase active">
+  <div class="hero">
+    <div class="hero-badge">✦ Free · No Login · Instant Results</div>
+    <h1>Read Your Skin.<br><span>Know What's Inside.</span></h1>
+    <p>Paste any skincare ingredient list, get a full breakdown, save products to your wishlist, and build your perfect routine.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="startQuiz()">✦ Take Skin Type Quiz</button>
+      <button class="btn-secondary" onclick="showPhase('phase-analyzer')">Skip to Analyzer →</button>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card"><div class="feat-icon">🧬</div><h3>Ingredient Decoded</h3><p>Every INCI name explained in plain English — what it does and why it's there.</p></div>
+    <div class="feat-card"><div class="feat-icon">🎯</div><h3>Your Skin Profile</h3><p>5-question quiz to find your skin type, then highlighted compatibility across all ingredients.</p></div>
+    <div class="feat-card"><div class="feat-icon">💾</div><h3>Save &amp; Compare</h3><p>Save analyzed products to your wishlist and build AM/PM routines with clash detection.</p></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><h3>Clash Detection</h3><p>We flag dangerous ingredient combos — like retinol + AHAs or vitamin C + copper peptides.</p></div>
+  </div>
+  <p class="hero-footer">Made with 💗 for skincare lovers · No data stored on servers · 100% private</p>
+</div>
+
+<!-- ══ PHASE: QUIZ ══ -->
+<div id="phase-quiz" class="phase">
+  <div class="quiz-wrap">
+    <div class="quiz-header"><h2>What's Your Skin Type?</h2><p>Answer 5 quick questions for personalised analysis.</p></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+    <div class="q-counter" id="q-counter">Question 1 of 5</div>
+    <div class="q-icon" id="q-icon"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-options" id="q-options"></div>
+    <div class="quiz-nav">
+      <button class="btn-back" id="btn-back" onclick="prevQuestion()">← Back</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PHASE: RESULT ══ -->
+<div id="phase-result" class="phase">
+  <div class="result-wrap">
+    <div class="result-badge">Your Skin Profile ✦</div>
+    <span class="result-emoji" id="res-emoji"></span>
+    <h2 class="result-name" id="res-name"></h2>
+    <p class="result-tagline" id="res-tagline"></p>
+    <p class="result-desc" id="res-desc"></p>
+    <div class="result-cols">
+      <div class="result-col look"><h4>✓ Look For</h4><ul id="res-lookfor"></ul></div>
+      <div class="result-col avoid"><h4>✗ Avoid</h4><ul id="res-avoid"></ul></div>
+    </div>
+    <div class="result-tips"><h4>✦ Smart Tips</h4><ul id="res-tips"></ul></div>
+    <button class="result-cta" onclick="goToAnalyzer()">Analyze My Products →</button>
+    <a class="retake-link" onclick="startQuiz()">Retake quiz</a>
+  </div>
+</div>
+
+<!-- ══ PHASE: ANALYZER ══ -->
+<div id="phase-analyzer" class="phase">
+  <div class="analyzer-wrap">
+    <div class="analyzer-header"><h2>Ingredient Analyzer</h2><p>Paste any product's full ingredient list below.</p></div>
+    <div class="skin-banner" id="skin-banner">
+      <span class="skin-banner-emoji" id="banner-emoji"></span>
+      <div class="skin-banner-text"><strong id="banner-type"></strong><span>Ingredients matched to your skin type are highlighted.</span></div>
+      <a class="skin-banner-change" onclick="startQuiz()">Change ↺</a>
+    </div>
+    <div id="analyzer-login-prompt" class="login-prompt" style="display:none;">
+      💾 <a onclick="openAuth('signup')">Create a free account</a> or <a onclick="openAuth('login')">sign in</a> to save products to your wishlist.
+    </div>
+    <div class="input-box">
+      <div class="input-row">
+        <div class="input-col">
+          <label>Product Name (optional)</label>
+          <input type="text" class="product-name-input" id="product-name-input" placeholder="e.g. The Ordinary Niacinamide 10%">
+        </div>
+      </div>
+      <div style="margin-top:18px;">
+        <label>Paste Ingredient List</label>
+        <textarea id="ingredient-input" placeholder="e.g. Water, Niacinamide, Zinc PCA, Glycerin, Hyaluronic Acid..."></textarea>
+      </div>
+    </div>
+    <button class="analyze-btn" onclick="analyze()">✦ Analyze Ingredients</button>
+    <div id="results-section">
+      <div class="results-header">
+        <h3 id="results-title">Ingredient Breakdown</h3>
+        <div class="results-actions">
+          <button class="save-btn" id="save-btn" onclick="saveToWishlist()">💾 Save to Wishlist</button>
+          <button class="clear-btn" onclick="clearResults()">Clear ✕</button>
+        </div>
+      </div>
+      <div class="summary-scores" id="summary-scores"></div>
+      <div class="ingredient-list" id="ingredient-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PHASE: DASHBOARD ══ -->
+<div id="phase-dashboard" class="phase">
+  <div class="dashboard-wrap">
+    <div class="dashboard-header">
+      <h2>My Dashboard</h2>
+      <p id="dashboard-greeting">Manage your saved products and build your routine.</p>
+    </div>
+    <div class="dash-tabs">
+      <button class="dash-tab active" onclick="switchTab('wishlist')">💾 Wishlist</button>
+      <button class="dash-tab" onclick="switchTab('routine')">🌅 Routine Builder</button>
+    </div>
+
+    <!-- Wishlist Tab -->
+    <div class="tab-panel active" id="tab-wishlist">
+      <div id="wishlist-content"></div>
+    </div>
+
+    <!-- Routine Tab -->
+    <div class="tab-panel" id="tab-routine">
+      <div class="routine-intro">
+        <strong>How it works:</strong> Add saved products to your AM or PM routine. SkinRead will detect ingredient clashes and tell you what to watch out for — like using retinol and AHAs on the same night.
+      </div>
+      <div class="routine-grid">
+        <div class="routine-slot">
+          <div class="routine-slot-head">
+            <span class="routine-slot-icon">🌅</span>
+            <div><div class="routine-slot-title">Morning Routine</div><div class="routine-slot-sub">AM · Protection &amp; glow</div></div>
+          </div>
+          <div class="routine-product-list" id="am-products"></div>
+          <div class="add-to-routine">
+            <select id="am-select"><option value="">Add a product...</option></select>
+            <button class="add-btn" onclick="addToRoutine('am')">+ Add to AM</button>
+          </div>
+        </div>
+        <div class="routine-slot">
+          <div class="routine-slot-head">
+            <span class="routine-slot-icon">🌙</span>
+            <div><div class="routine-slot-title">Evening Routine</div><div class="routine-slot-sub">PM · Repair &amp; treat</div></div>
+          </div>
+          <div class="routine-product-list" id="pm-products"></div>
+          <div class="add-to-routine">
+            <select id="pm-select"><option value="">Add a product...</option></select>
+            <button class="add-btn" onclick="addToRoutine('pm')">+ Add to PM</button>
+          </div>
+        </div>
+      </div>
+      <div class="clash-section">
+        <h3>⚡ Ingredient Clashes</h3>
+        <div id="clash-results"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   AUTH SYSTEM
+════════════════════════════════════════ */
+let authMode = 'login';
+let currentUser = null;
+
+function hashPw(pw){ return btoa(pw + 'skinread_salt_v1'); }
+
+function openAuth(mode){
+  authMode = mode;
+  document.getElementById('auth-modal').classList.add('open');
+  setAuthMode(mode);
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+  document.getElementById('auth-name').value='';
+  document.getElementById('auth-error').classList.remove('show');
+  setTimeout(()=>document.getElementById('auth-email').focus(), 100);
+}
+function closeAuth(){ document.getElementById('auth-modal').classList.remove('open'); }
+function setAuthMode(mode){
+  authMode=mode;
+  const isSignup = mode==='signup';
+  document.getElementById('auth-title').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-sub').textContent = isSignup ? 'Start saving products and building your routine.' : 'Welcome back — your wishlist is waiting.';
+  document.getElementById('auth-submit').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-name-group').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-switch').innerHTML = isSignup
+    ? 'Already have an account? <a onclick="toggleAuthMode()">Sign In</a>'
+    : "Don't have an account? <a onclick=\"toggleAuthMode()\">Sign Up</a>";
+}
+function toggleAuthMode(){ setAuthMode(authMode==='login'?'signup':'login'); }
+function showError(msg){ const el=document.getElementById('auth-error'); el.textContent=msg; el.classList.add('show'); }
+
+function submitAuth(){
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  const pw = document.getElementById('auth-password').value;
+  const name = document.getElementById('auth-name').value.trim();
+  document.getElementById('auth-error').classList.remove('show');
+
+  if(!email || !pw){ showError('Please fill in all fields.'); return; }
+  if(!/\S+@\S+\.\S+/.test(email)){ showError('Please enter a valid email.'); return; }
+  if(pw.length < 6){ showError('Password must be at least 6 characters.'); return; }
+
+  const users = JSON.parse(localStorage.getItem('skinread_users') || '[]');
+
+  if(authMode==='signup'){
+    if(!name){ showError('Please enter your name.'); return; }
+    if(users.find(u=>u.email===email)){ showError('An account with this email already exists.'); return; }
+    const newUser = { email, passwordHash: hashPw(pw), name, createdAt: Date.now() };
+    users.push(newUser);
+    localStorage.setItem('skinread_users', JSON.stringify(users));
+    loginUser(newUser);
+  } else {
+    const user = users.find(u=>u.email===email);
+    if(!user || user.passwordHash!==hashPw(pw)){ showError('Incorrect email or password.'); return; }
+    loginUser(user);
+  }
+}
+
+function loginUser(user){
+  currentUser = user;
+  localStorage.setItem('skinread_session', JSON.stringify({ email: user.email, loginAt: Date.now() }));
+  closeAuth();
+  updateNavForUser();
+  checkLoginPrompt();
+}
+
+function logoutUser(){
+  currentUser = null;
+  localStorage.removeItem('skinread_session');
+  updateNavForUser();
+  checkLoginPrompt();
+  showPhase('phase-landing');
+}
+
+function restoreSession(){
+  const session = JSON.parse(localStorage.getItem('skinread_session') || 'null');
+  if(!session) return;
+  const users = JSON.parse(localStorage.getItem('skinread_users') || '[]');
+  const user = users.find(u=>u.email===session.email);
+  if(user){ currentUser=user; updateNavForUser(); }
+}
+
+function updateNavForUser(){
+  const loggedOut = document.getElementById('nav-logged-out');
+  const loggedIn = document.getElementById('nav-logged-in');
+  if(currentUser){
+    loggedOut.style.display='none';
+    loggedIn.style.display='flex';
+    document.getElementById('nav-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('nav-name').textContent = currentUser.name.split(' ')[0];
+  } else {
+    loggedOut.style.display='flex';
+    loggedIn.style.display='none';
+  }
+}
+
+function checkLoginPrompt(){
+  const el = document.getElementById('analyzer-login-prompt');
+  if(el) el.style.display = currentUser ? 'none' : 'block';
+}
+
+/* ════════════════════════════════════════
+   QUIZ DATA
+════════════════════════════════════════ */
+const QUESTIONS = [
+  { icon:'🧴', question:'How does your skin feel a few hours after cleansing (no products applied)?',
+    options:[{emoji:'💦',text:'Shiny and oily all over',scores:{oily:3}},{emoji:'🌵',text:'Tight, rough, or flaky',scores:{dry:3}},{emoji:'☯️',text:'Oily in T-zone, drier on cheeks',scores:{combination:3}},{emoji:'🌸',text:'Red, itchy, or easily irritated',scores:{sensitive:3}}]},
+  { icon:'🔬', question:'How visible are your pores, especially on your nose and forehead?',
+    options:[{emoji:'😬',text:'Very visible and enlarged',scores:{oily:3,combination:1}},{emoji:'👀',text:'Small but there',scores:{combination:2,dry:1}},{emoji:'✨',text:'Barely visible',scores:{dry:2,sensitive:1}},{emoji:'🌿',text:'Fine lines more visible than pores',scores:{mature:3,dry:1}}]},
+  { icon:'🫧', question:'How often do you get breakouts or clogged pores?',
+    options:[{emoji:'😤',text:'Frequently — blackheads, whiteheads, pimples',scores:{oily:3}},{emoji:'🤔',text:'Occasionally, mostly in T-zone',scores:{combination:3}},{emoji:'😌',text:'Rarely or never',scores:{dry:2,mature:1}},{emoji:'🥵',text:'I get reaction bumps or redness instead',scores:{sensitive:3}}]},
+  { icon:'🧪', question:'How does your skin react to new products?',
+    options:[{emoji:'🔥',text:'Burns, stings, or turns red often',scores:{sensitive:3}},{emoji:'🤷',text:'Sometimes breaks out but mostly fine',scores:{oily:1,combination:2}},{emoji:'👌',text:'No reaction, but can feel tight after',scores:{dry:2}},{emoji:'🧘',text:'Usually handles products well',scores:{oily:1,dry:1,combination:1}}]},
+  { icon:'🪞', question:'What is your main skin concern?',
+    options:[{emoji:'💧',text:'Shine, oiliness, or large pores',scores:{oily:3}},{emoji:'🌊',text:'Dryness, dullness, or dehydration',scores:{dry:3}},{emoji:'🌺',text:'Redness, sensitivity, or rosacea',scores:{sensitive:3}},{emoji:'🌿',text:'Fine lines, firmness, and ageing',scores:{mature:4,dry:1}}]}
+];
+const SKIN_RESULTS={oily:{emoji:'💦',name:'Oily Skin',tagline:'Glow that goes a little too hard.',description:'Your skin produces excess sebum, leading to shine, enlarged pores, and frequent breakouts. The upside? Oily skin ages slower and stays naturally moisturised.',lookFor:['Niacinamide','Salicylic Acid','Zinc PCA','Clay (Kaolin)','Lightweight Hyaluronic Acid'],avoid:['Heavy oils & butters','Denatured alcohol','Comedogenic silicones','Rich creamy textures'],tips:['Double cleanse at night to clear excess sebum.','Use gel or serum moisturisers — skip heavy creams.','SPF gel formulas work best for oily types.']},dry:{emoji:'🌵',name:'Dry Skin',tagline:'Thirsty for hydration, all day every day.',description:'Your skin barrier produces less oil and struggles to retain moisture. It may feel tight, look flaky, and show fine lines more readily — but responds beautifully to rich nourishing formulas.',lookFor:['Ceramides','Hyaluronic Acid','Shea Butter','Squalane','Glycerin','Fatty alcohols'],avoid:['Harsh surfactants (SLS/SLES)','High-strength acids','Drying alcohols','Over-exfoliation'],tips:['Apply serums to damp skin to seal in moisture.','Use a rich night cream or facial oil at night.','Avoid hot water — it strips the skin barrier.']},sensitive:{emoji:'🌸',name:'Sensitive Skin',tagline:'Your skin feels everything — deeply.',description:'Your skin reacts easily to ingredients, environmental triggers, and stress. Redness, stinging, and flare-ups are common. Keep your routine simple and fragrance-free.',lookFor:['Centella Asiatica','Ceramides','Allantoin','Panthenol (B5)','Oat extract'],avoid:['Fragrance (parfum)','Essential oils','Denatured alcohol','High-strength retinol / acids'],tips:['Patch test every new product for 48 hours.','Simplify your routine — fewer steps is better.','Look for "fragrance-free" not just "unscented".']},combination:{emoji:'☯️',name:'Combination Skin',tagline:'Oily here, dry there — balancing act.',description:'Your T-zone gets oily while your cheeks may feel normal to dry. You need a balanced routine that doesn\'t over-moisturise or over-strip.',lookFor:['Niacinamide','Lightweight Hyaluronic Acid','Lactic Acid','Balancing toners'],avoid:['Very heavy creams on T-zone','Stripping toners all over','Heavy oils on nose area'],tips:['Use a lightweight gel moisturiser all over.','Multi-masking: clay on T-zone, hydrating on cheeks.','A BHA serum once or twice a week helps balance both zones.']},mature:{emoji:'🌿',name:'Mature Skin',tagline:'Wisdom in every fine line.',description:'Your skin shows signs of ageing — fine lines, loss of firmness, and slower cell turnover. It benefits from targeted anti-ageing actives, rich moisturisers, and diligent SPF.',lookFor:['Retinol / Retinoids','Peptides','Vitamin C','Hyaluronic Acid','Ceramides','SPF 50+'],avoid:['Drying formulas','Harsh physical scrubs','High-alcohol content','Skipping SPF'],tips:['Start retinol slow — once a week to start.','Layer: serum → oil → cream for maximum moisture.','Vitamin C in the morning, retinol at night.']}};
+
+let currentQ=0, answers=[null,null,null,null,null], detectedSkinType=null;
+
+function showPhase(id){
+  document.querySelectorAll('.phase').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='phase-dashboard') renderDashboard();
+  if(id==='phase-analyzer') checkLoginPrompt();
+}
+function startQuiz(){currentQ=0;answers=[null,null,null,null,null];showPhase('phase-quiz');renderQuestion();}
+function renderQuestion(){
+  const q=QUESTIONS[currentQ];
+  document.getElementById('progress-fill').style.width=((currentQ+1)/QUESTIONS.length*100)+'%';
+  document.getElementById('q-counter').textContent=`Question ${currentQ+1} of ${QUESTIONS.length}`;
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.question;
+  const c=document.getElementById('q-options');c.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const d=document.createElement('div');
+    d.className='q-option'+(answers[currentQ]===i?' selected':'');
+    d.innerHTML=`<span class="q-option-emoji">${opt.emoji}</span><span class="q-option-text">${opt.text}</span>`;
+    d.onclick=()=>selectOption(i);c.appendChild(d);
+  });
+  document.getElementById('btn-back').style.visibility=currentQ===0?'hidden':'visible';
+  document.getElementById('btn-next').disabled=answers[currentQ]===null;
+  document.getElementById('btn-next').textContent=currentQ===QUESTIONS.length-1?'See My Result →':'Next →';
+}
+function selectOption(i){
+  answers[currentQ]=i;
+  document.querySelectorAll('.q-option').forEach((el,idx)=>el.classList.toggle('selected',idx===i));
+  document.getElementById('btn-next').disabled=false;
+}
+function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();}}
+function nextQuestion(){if(answers[currentQ]===null)return;if(currentQ<QUESTIONS.length-1){currentQ++;renderQuestion();}else{showResult();}}
+function calculateSkinType(){
+  const s={oily:0,dry:0,sensitive:0,combination:0,mature:0};
+  answers.forEach((a,qi)=>{if(a===null)return;const os=QUESTIONS[qi].options[a].scores;Object.entries(os).forEach(([t,v])=>s[t]=(s[t]||0)+v);});
+  return Object.entries(s).sort((a,b)=>b[1]-a[1])[0][0];
+}
+function showResult(){
+  detectedSkinType=calculateSkinType();const r=SKIN_RESULTS[detectedSkinType];
+  document.getElementById('res-emoji').textContent=r.emoji;
+  document.getElementById('res-name').textContent=r.name;
+  document.getElementById('res-tagline').textContent=r.tagline;
+  document.getElementById('res-desc').textContent=r.description;
+  document.getElementById('res-lookfor').innerHTML=r.lookFor.map(i=>`<li>${i}</li>`).join('');
+  document.getElementById('res-avoid').innerHTML=r.avoid.map(i=>`<li>${i}</li>`).join('');
+  document.getElementById('res-tips').innerHTML=r.tips.map(t=>`<li>${t}</li>`).join('');
+  showPhase('phase-result');
+}
+function goToAnalyzer(){
+  showPhase('phase-analyzer');
+  if(detectedSkinType){
+    const r=SKIN_RESULTS[detectedSkinType];
+    const b=document.getElementById('skin-banner');b.classList.add('visible');
+    document.getElementById('banner-emoji').textContent=r.emoji;
+    document.getElementById('banner-type').textContent=r.name+' · Personalised Analysis Active';
+  }
+}
+
+/* ════════════════════════════════════════
+   INGREDIENT DATABASE
+════════════════════════════════════════ */
+const INGREDIENTS=[
+  {name:'Hyaluronic Acid',inci:'Sodium Hyaluronate',what:'Powerful humectant that draws and holds moisture. Can hold up to 1000x its weight in water.',tags:['hydrating'],goodFor:['dry','combination','oily','sensitive','mature'],flag:'green',flagLabel:'💧 Hydration Hero'},
+  {name:'Glycerin',inci:'Glycerol',what:'Draws water into skin, keeping it soft and supple. Universally loved, very gentle humectant.',tags:['hydrating'],goodFor:['dry','oily','sensitive','combination','mature'],flag:'green',flagLabel:'💧 All Skin Favourite'},
+  {name:'Sodium PCA',inci:'Sodium PCA',what:'Part of the skin\'s natural moisturising factor (NMF). Excellent humectant in harmony with skin.',tags:['hydrating'],goodFor:['dry','combination','oily','sensitive'],flag:'green',flagLabel:'💧 NMF Booster'},
+  {name:'Betaine',inci:'Betaine',what:'Gentle humectant from sugar beet. Soothes and hydrates while balancing osmotic pressure in skin cells.',tags:['hydrating'],goodFor:['sensitive','dry','combination'],flag:'green',flagLabel:'💧 Calming Humectant'},
+  {name:'Aloe Vera',inci:'Aloe Barbadensis Leaf Juice',what:'Soothing, hydrating botanical rich in polysaccharides. Reduces redness and provides lightweight moisture.',tags:['hydrating','soothing'],goodFor:['sensitive','oily','combination','dry'],flag:'green',flagLabel:'🌿 Soothing + Hydrating'},
+  {name:'Panthenol',inci:'D-Panthenol',what:'Pro-vitamin B5. Deeply hydrates, soothes, and helps repair the skin barrier. Reduces inflammation.',tags:['hydrating','repairing'],goodFor:['sensitive','dry','combination','mature'],flag:'green',flagLabel:'🔬 Barrier Repairer'},
+  {name:'Niacinamide',inci:'Niacinamide',what:'Vitamin B3. Minimises pores, fades dark spots, regulates sebum, and strengthens the skin barrier.',tags:['brightening','anti-aging'],goodFor:['oily','combination','sensitive','dry','mature'],flag:'green',flagLabel:'⭐ Multi-Tasker'},
+  {name:'Retinol',inci:'Retinol',what:'Gold standard anti-ageing active. Accelerates cell turnover and stimulates collagen. Start low and slow.',tags:['anti-aging'],goodFor:['mature','oily','combination'],flag:'yellow',flagLabel:'⚠️ Start Slow'},
+  {name:'Retinyl Palmitate',inci:'Retinyl Palmitate',what:'Gentler ester form of retinol. Good entry point for retinoid beginners or sensitive skin.',tags:['anti-aging'],goodFor:['mature','sensitive','dry'],flag:'green',flagLabel:'✨ Gentle Retinoid'},
+  {name:'Vitamin C',inci:'Ascorbic Acid',what:'Potent antioxidant that brightens skin and boosts collagen. Effective but can be unstable and irritating.',tags:['brightening','anti-aging'],goodFor:['mature','dry','combination','oily'],flag:'yellow',flagLabel:'✨ Brightener — Check Stability'},
+  {name:'Sodium Ascorbyl Phosphate',inci:'Sodium Ascorbyl Phosphate',what:'Stable, gentler vitamin C derivative. Less irritating than pure ascorbic acid with good brightening effect.',tags:['brightening'],goodFor:['sensitive','combination','oily','mature'],flag:'green',flagLabel:'✨ Stable Vit C'},
+  {name:'Azelaic Acid',inci:'Azelaic Acid',what:'Multitasking acid tackling acne, hyperpigmentation, and rosacea. Gentle enough for sensitive skin.',tags:['brightening'],goodFor:['sensitive','oily','combination','dry','mature'],flag:'green',flagLabel:'✨ Brightening + Calming'},
+  {name:'Alpha Arbutin',inci:'Alpha-Arbutin',what:'Stable brightening ingredient from bearberry. Inhibits melanin to fade dark spots gently.',tags:['brightening'],goodFor:['sensitive','combination','dry','mature','oily'],flag:'green',flagLabel:'✨ Gentle Brightener'},
+  {name:'Tranexamic Acid',inci:'Tranexamic Acid',what:'Newer brightening active effective on melasma and post-inflammatory hyperpigmentation.',tags:['brightening'],goodFor:['sensitive','combination','mature','dry','oily'],flag:'green',flagLabel:'✨ Melasma Fighter'},
+  {name:'Kojic Acid',inci:'Kojic Acid',what:'Derived from fungi, inhibits tyrosinase to lighten dark spots. Can cause irritation in high concentrations.',tags:['brightening'],goodFor:['oily','combination','mature'],flag:'yellow',flagLabel:'⚠️ May Irritate'},
+  {name:'Salicylic Acid',inci:'Salicylic Acid',what:'Oil-soluble BHA that penetrates pores to dissolve sebum. Perfect for blackheads and congestion.',tags:['exfoliating'],goodFor:['oily','combination'],flag:'yellow',flagLabel:'⚠️ BHA — Avoid if Sensitive'},
+  {name:'Glycolic Acid',inci:'Glycolic Acid',what:'Smallest AHA — effective exfoliation, smoothing, and brightening. Always use SPF.',tags:['exfoliating','brightening'],goodFor:['oily','combination','mature','dry'],flag:'yellow',flagLabel:'⚠️ AHA — Use SPF'},
+  {name:'Lactic Acid',inci:'Lactic Acid',what:'Gentler AHA. Exfoliates and hydrates simultaneously. Better tolerated than glycolic for most skin types.',tags:['exfoliating','hydrating'],goodFor:['dry','combination','sensitive','mature'],flag:'yellow',flagLabel:'⚠️ Gentle AHA — Use SPF'},
+  {name:'Mandelic Acid',inci:'Mandelic Acid',what:'Largest AHA, gentlest exfoliant. Antibacterial — great for acne without the harshness.',tags:['exfoliating'],goodFor:['sensitive','oily','combination'],flag:'green',flagLabel:'✨ Gentle AHA'},
+  {name:'PHA',inci:'Gluconolactone',what:'Next-gen AHA that exfoliates only on the surface. Very gentle, suitable even for rosacea-prone skin.',tags:['exfoliating'],goodFor:['sensitive','dry','mature','combination'],flag:'green',flagLabel:'✨ Sensitive-Friendly Exfoliant'},
+  {name:'Ceramides',inci:'Ceramide NP',what:'Lipids naturally found in the skin barrier. Essential for locking in moisture and protecting against damage.',tags:['repairing'],goodFor:['dry','sensitive','mature','combination','oily'],flag:'green',flagLabel:'🛡️ Barrier Essential'},
+  {name:'Cholesterol',inci:'Cholesterol',what:'Lipid that works synergistically with ceramides and fatty acids to repair and maintain the skin barrier.',tags:['repairing'],goodFor:['dry','sensitive','mature'],flag:'green',flagLabel:'🛡️ Barrier Lipid'},
+  {name:'Squalane',inci:'Squalane',what:'Lightweight, non-comedogenic oil. Mimics skin\'s natural sebum. Excellent for all skin types.',tags:['hydrating','repairing'],goodFor:['dry','sensitive','combination','mature','oily'],flag:'green',flagLabel:'✨ Non-Comedogenic Oil'},
+  {name:'Shea Butter',inci:'Butyrospermum Parkii Butter',what:'Rich emollient with fatty acids and vitamins. Deeply nourishing for dry/sensitive skin. May be too heavy for oily.',tags:['hydrating'],goodFor:['dry','sensitive','mature'],flag:'yellow',flagLabel:'⚠️ Heavy — Skip if Oily'},
+  {name:'Jojoba Oil',inci:'Simmondsia Chinensis Seed Oil',what:'Liquid wax closely resembling skin\'s sebum. Non-comedogenic and balancing.',tags:['hydrating'],goodFor:['oily','combination','dry','sensitive','mature'],flag:'green',flagLabel:'✨ Balancing Oil'},
+  {name:'Allantoin',inci:'Allantoin',what:'Calming, healing ingredient that soothes irritation and promotes cell regeneration.',tags:['soothing','repairing'],goodFor:['sensitive','dry','combination'],flag:'green',flagLabel:'🌿 Skin Soother'},
+  {name:'Matrixyl',inci:'Palmitoyl Pentapeptide-4',what:'Peptide that signals skin to produce more collagen. Proven anti-ageing with minimal irritation.',tags:['anti-aging'],goodFor:['mature','dry','combination'],flag:'green',flagLabel:'🧬 Collagen Booster'},
+  {name:'Argireline',inci:'Acetyl Hexapeptide-3',what:'Peptide that relaxes facial muscles to reduce expression lines.',tags:['anti-aging'],goodFor:['mature','dry'],flag:'green',flagLabel:'🧬 Expression Line Fighter'},
+  {name:'Copper Peptide',inci:'Copper Tripeptide-1',what:'Promotes wound healing and collagen synthesis. Avoid mixing with vitamin C or retinol.',tags:['anti-aging','repairing'],goodFor:['mature','dry','combination'],flag:'yellow',flagLabel:"⚠️ Don't Mix with Vit C"},
+  {name:'Dimethicone',inci:'Dimethicone',what:'Silicone creating a smooth protective layer. Fills fine lines, seals in moisture. Non-comedogenic.',tags:['repairing'],goodFor:['dry','combination','mature'],flag:'green',flagLabel:'🛡️ Protective Film'},
+  {name:'Petrolatum',inci:'Petrolatum',what:'The ultimate occlusive — impenetrable moisture barrier. Non-comedogenic despite reputation. Great for slugging.',tags:['repairing'],goodFor:['dry','sensitive','mature'],flag:'green',flagLabel:'🛡️ Occlusive'},
+  {name:'Tocopherol',inci:'Tocopherol',what:'Vitamin E. Potent antioxidant that protects against free radical damage and strengthens the barrier.',tags:['anti-aging'],goodFor:['dry','mature','sensitive','combination','oily'],flag:'green',flagLabel:'🛡️ Antioxidant'},
+  {name:'Resveratrol',inci:'Resveratrol',what:'Powerful antioxidant from grapes. Combats oxidative stress and supports anti-ageing.',tags:['anti-aging'],goodFor:['mature','sensitive','oily','combination'],flag:'green',flagLabel:'🛡️ Antioxidant'},
+  {name:'Ferulic Acid',inci:'Ferulic Acid',what:'Antioxidant that doubles the efficacy of vitamins C and E. Found in antioxidant serums.',tags:['brightening','anti-aging'],goodFor:['mature','combination','oily','dry'],flag:'green',flagLabel:'🛡️ Antioxidant Booster'},
+  {name:'Green Tea Extract',inci:'Camellia Sinensis Leaf Extract',what:'Rich in EGCG antioxidants with anti-inflammatory and sebum-regulating properties.',tags:['soothing','anti-aging'],goodFor:['oily','sensitive','combination','mature'],flag:'green',flagLabel:'🌿 Antioxidant + Calming'},
+  {name:'Bakuchiol',inci:'Bakuchiol',what:'Plant-based retinol alternative from babchi plant. Anti-ageing benefits without retinol irritation.',tags:['anti-aging'],goodFor:['sensitive','mature','dry','combination'],flag:'green',flagLabel:'✨ Gentle Retinol Alt'},
+  {name:'Centella Asiatica',inci:'Centella Asiatica Extract',what:'Korean staple that calms inflammation, promotes healing, and strengthens the skin barrier.',tags:['soothing','repairing'],goodFor:['sensitive','combination','oily','dry'],flag:'green',flagLabel:'🌿 Cica Magic'},
+  {name:'Licorice Root Extract',inci:'Glycyrrhiza Glabra Root Extract',what:'Naturally brightens and reduces redness by inhibiting pigment formation.',tags:['brightening','soothing'],goodFor:['sensitive','combination','mature','dry','oily'],flag:'green',flagLabel:'✨ Brightening + Calming'},
+  {name:'Oat Extract',inci:'Avena Sativa Kernel Extract',what:'Colloidal oats soothe extremely sensitive, eczema-prone, or irritated skin.',tags:['soothing'],goodFor:['sensitive','dry'],flag:'green',flagLabel:'🌿 Eczema-Friendly'},
+  {name:'Mugwort Extract',inci:'Artemisia Vulgaris Extract',what:'Traditional Korean herb with anti-inflammatory properties. Calms sensitive and acne-prone skin.',tags:['soothing'],goodFor:['sensitive','oily','combination'],flag:'green',flagLabel:'🌿 Calming Herb'},
+  {name:'Zinc PCA',inci:'Zinc PCA',what:'Controls sebum production, has antibacterial properties, and calms redness.',tags:['hydrating'],goodFor:['oily','combination','sensitive'],flag:'green',flagLabel:'💧 Sebum Control'},
+  {name:'Kaolin',inci:'Kaolin',what:'Gentle white clay that absorbs excess oil without stripping skin. Great for oily/congested skin.',tags:[],goodFor:['oily','combination'],flag:'green',flagLabel:'🧱 Oil Absorber'},
+  {name:'Phenoxyethanol',inci:'Phenoxyethanol',what:'One of the most common preservatives in modern skincare. Generally safe and well-tolerated.',tags:[],goodFor:['oily','dry','combination','mature'],flag:'green',flagLabel:'🔬 Preservative'},
+  {name:'Sodium Benzoate',inci:'Sodium Benzoate',what:'Preservative in acidic pH products. Can form benzene when combined with vitamin C under heat.',tags:[],goodFor:[],flag:'yellow',flagLabel:'⚠️ Check with Vit C'},
+  {name:'Methylparaben',inci:'Methylparaben',what:'Traditional preservative. Considered safe at low concentrations but some prefer to avoid parabens.',tags:[],goodFor:[],flag:'yellow',flagLabel:'⚠️ Paraben'},
+  {name:'Fragrance',inci:'Parfum',what:'Artificial scent blend. Top cause of skin sensitisation and allergic reactions. Avoid with sensitive skin.',tags:[],goodFor:['oily','combination'],flag:'red',flagLabel:'🚩 Common Irritant'},
+  {name:'Essential Oils',inci:'Lavender Oil / Rose Oil / Citrus Oil',what:'Natural fragrances that often cause sensitisation over time. Many are known skin irritants despite being "natural".',tags:[],goodFor:[],flag:'red',flagLabel:'🚩 Sensitiser'},
+  {name:'Alcohol Denat',inci:'Alcohol Denat.',what:'Drying alcohol used as astringent. Can disrupt the skin barrier — problematic for dry and sensitive skin.',tags:[],goodFor:[],flag:'red',flagLabel:'🚩 Barrier Disruptor'},
+  {name:'Sodium Lauryl Sulfate',inci:'Sodium Lauryl Sulfate',what:'Harsh foaming surfactant that strips the skin barrier, causing irritation and dryness.',tags:[],goodFor:[],flag:'red',flagLabel:'🚩 Harsh Surfactant'},
+  {name:'Zinc Oxide',inci:'Zinc Oxide',what:'Mineral UV filter. Broad-spectrum protection. Gentle and non-irritating for sensitive skin.',tags:[],goodFor:['sensitive','dry','oily','combination','mature'],flag:'green',flagLabel:'☀️ Mineral SPF'},
+  {name:'Titanium Dioxide',inci:'Titanium Dioxide',what:'Mineral UV filter providing broad-spectrum protection. Very gentle and rarely causes reactions.',tags:[],goodFor:['sensitive','dry','oily','combination','mature'],flag:'green',flagLabel:'☀️ Mineral SPF'},
+  {name:'Water',inci:'Aqua',what:'Universal solvent and most common skincare ingredient. Forms the base of most water-based formulas.',tags:[],goodFor:['oily','dry','combination','mature','sensitive'],flag:'green',flagLabel:'💧 Base'},
+  {name:'Propanediol',inci:'1,3-Propanediol',what:'Plant-derived humectant and solvent. Gentle, hydrating, skin-friendly.',tags:['hydrating'],goodFor:['dry','sensitive','combination','oily','mature'],flag:'green',flagLabel:'💧 Plant Humectant'},
+  {name:'Butylene Glycol',inci:'Butylene Glycol',what:'Humectant and solvent that improves product texture. Generally well-tolerated.',tags:['hydrating'],goodFor:['oily','combination','dry','sensitive'],flag:'green',flagLabel:'💧 Humectant'},
+];
+
+/* ════════════════════════════════════════
+   CLASH DATABASE
+════════════════════════════════════════ */
+const CLASHES=[
+  {a:'Retinol',b:'Glycolic Acid',severity:'high',icon:'🔥',note:'Both highly active — together cause over-exfoliation and irritation. Use retinol PM and glycolic on alternate nights.'},
+  {a:'Retinol',b:'Lactic Acid',severity:'high',icon:'🔥',note:'AHAs and retinol together can cause significant irritation and barrier damage. Alternate between nights.'},
+  {a:'Retinol',b:'Salicylic Acid',severity:'high',icon:'🔥',note:'Over-exfoliation risk. Both are strong actives — separate them into different nights.'},
+  {a:'Retinol',b:'Vitamin C',severity:'medium',icon:'⚡',note:'Both are unstable and can degrade each other. Use Vitamin C in the morning, retinol at night.'},
+  {a:'Vitamin C',inci_b:'Copper Tripeptide-1',b:'Copper Peptide',severity:'high',icon:'🔥',note:'Copper ions can degrade vitamin C molecules, rendering both less effective. Use on separate days.'},
+  {a:'Retinol',b:'Retinyl Palmitate',severity:'low',icon:'⚠️',note:'Two forms of vitamin A in the same routine may cause cumulative irritation — consider removing one.'},
+  {a:'Glycolic Acid',b:'Salicylic Acid',severity:'medium',icon:'⚡',note:'Combining multiple exfoliating acids increases over-exfoliation risk. Use one at a time.'},
+  {a:'Lactic Acid',b:'Salicylic Acid',severity:'medium',icon:'⚡',note:'Stacking exfoliants can compromise the skin barrier. Consider alternating days.'},
+  {a:'Niacinamide',b:'Vitamin C',severity:'low',icon:'⚠️',note:'At high concentrations these can reduce each other\'s effectiveness. Generally fine at lower percentages (< 10%).'},
+  {a:'Alcohol Denat',b:'Retinol',severity:'medium',icon:'⚡',note:'Alcohol-based formulas can increase retinol penetration to uncomfortable levels, causing irritation.'},
+  {a:'Benzoyl Peroxide',b:'Retinol',severity:'high',icon:'🔥',note:'Benzoyl peroxide oxidises retinol, rendering it completely ineffective.'},
+];
+
+function detectClashes(productIds){
+  if(!currentUser) return [];
+  const wishlist=getWishlist();
+  const products=productIds.map(id=>wishlist.find(p=>p.id===id)).filter(Boolean);
+  const allIngNames=[];
+  products.forEach(p=>{
+    (p.matchedIngs||[]).forEach(name=>allIngNames.push(name));
+  });
+  const found=[];
+  CLASHES.forEach(clash=>{
+    const hasA = allIngNames.some(n=>n.toLowerCase().includes(clash.a.toLowerCase()));
+    const hasB = allIngNames.some(n=>n.toLowerCase().includes(clash.b.toLowerCase()));
+    if(hasA && hasB) found.push(clash);
+  });
+  return found;
+}
+
+/* ════════════════════════════════════════
+   ANALYZER LOGIC
+════════════════════════════════════════ */
+const SKIN_LABELS={oily:'Oily',dry:'Dry',sensitive:'Sensitive',combination:'Combo',mature:'Mature'};
+let lastAnalysisResult=null;
+
+function matchIngredient(raw){
+  const r=raw.toLowerCase().trim();
+  for(const ing of INGREDIENTS){
+    const names=[ing.name,ing.inci,...ing.inci.split(' / ')].map(n=>n.toLowerCase());
+    if(names.some(n=>r.includes(n)||n.includes(r))) return ing;
+  }
+  return null;
+}
+function buildScores(matched){
+  const s={hydrating:0,brightening:0,'anti-aging':0,sensitive:0};
+  matched.forEach(m=>{
+    if(m.tags.includes('hydrating')) s.hydrating+=20;
+    if(m.tags.includes('brightening')) s.brightening+=25;
+    if(m.tags.includes('anti-aging')) s['anti-aging']+=20;
+    if(m.flag==='green') s.sensitive+=15;
+    if(m.flag==='red') s.sensitive-=20;
+  });
+  Object.keys(s).forEach(k=>s[k]=Math.min(100,Math.max(0,s[k])));
+  return s;
+}
+function analyze(){
+  const raw=document.getElementById('ingredient-input').value.trim();
+  if(!raw) return;
+  const parts=raw.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  const matched=[],unknown=[];const seen=new Set();
+  parts.forEach(p=>{
+    const ing=matchIngredient(p);
+    if(ing&&!seen.has(ing.name)){seen.add(ing.name);matched.push({ing,raw:p});}
+    else if(!ing) unknown.push(p);
+  });
+  lastAnalysisResult={name:document.getElementById('product-name-input').value.trim()||'Unnamed Product',raw,matched,unknown,scores:buildScores(matched.map(m=>m.ing)),at:Date.now()};
+  renderResults(matched,unknown);
+  document.getElementById('save-btn').classList.remove('saved');
+  document.getElementById('save-btn').textContent='💾 Save to Wishlist';
+}
+function renderResults(matched,unknown){
+  const sec=document.getElementById('results-section');
+  sec.style.display='block';
+  sec.scrollIntoView({behavior:'smooth',block:'start'});
+  const name=document.getElementById('product-name-input').value.trim();
+  document.getElementById('results-title').textContent=name ? `"${name}" — Breakdown` : 'Ingredient Breakdown';
+  const scores=buildScores(matched.map(m=>m.ing));
+  const scoreColors={hydrating:'#00F5A0',brightening:'#B45FFF','anti-aging':'#FF7A00',sensitive:'#FF006E'};
+  const scoreLabels={hydrating:'💧 Hydrating',brightening:'✨ Brightening','anti-aging':'🕐 Anti-Aging',sensitive:'🛡️ Sensitive-Safe'};
+  document.getElementById('summary-scores').innerHTML=Object.entries(scores).map(([k,v])=>
+    `<div class="score-card"><div class="s-label">${scoreLabels[k]}</div><div class="score-bar-wrap"><div class="score-bar" style="width:${v}%;background:${scoreColors[k]}"></div></div><div class="score-pct" style="color:${scoreColors[k]}">${v}%</div></div>`
+  ).join('');
+  const st=detectedSkinType;
+  const list=document.getElementById('ingredient-list');list.innerHTML='';
+  matched.forEach(({ing,raw})=>{
+    const card=document.createElement('div');card.className=`ing-card flag-${ing.flag}`;
+    const goodForTags=ing.goodFor.map(t=>`<span class="goodfor-tag ${st===t?'highlight':''}">${SKIN_LABELS[t]||t}</span>`).join('');
+    const compatBadges=['oily','dry','sensitive','combination','mature'].map(t=>{
+      const level=ing.goodFor.includes(t)?'great':(ing.flag==='red'?'avoid':'ok');
+      const isYours=st===t;
+      return `<span class="compat-badge compat-${level} ${isYours?'your-type':''}">${SKIN_LABELS[t]}${isYours?'<span class="your-pill">YOU</span>':''}</span>`;
+    }).join('');
+    card.innerHTML=`<div class="ing-top"><div><span class="ing-name">${ing.name}</span><span class="ing-inci">${raw!==ing.name?raw+' · ':''}${ing.inci}</span></div>${ing.flagLabel?`<span class="ing-flag ${ing.flag}">${ing.flagLabel}</span>`:''}</div><p class="ing-what">${ing.what}</p><div class="ing-meta">${goodForTags}</div><div class="compat-row">${compatBadges}</div>`;
+    list.appendChild(card);
+  });
+  unknown.forEach(name=>{
+    const card=document.createElement('div');card.className='unknown-card';
+    card.innerHTML=`<span class="uk-emoji">🔍</span><div class="uk-text"><span class="uk-name">${name}</span>Not in our database yet</div>`;
+    list.appendChild(card);
+  });
+}
+function clearResults(){
+  document.getElementById('ingredient-input').value='';
+  document.getElementById('product-name-input').value='';
+  document.getElementById('results-section').style.display='none';
+  document.getElementById('ingredient-list').innerHTML='';
+  lastAnalysisResult=null;
+}
+
+/* ════════════════════════════════════════
+   WISHLIST
+════════════════════════════════════════ */
+function getWishlistKey(){ return currentUser?`skinread_wl_${currentUser.email}`:null; }
+function getWishlist(){
+  const k=getWishlistKey();if(!k)return[];
+  return JSON.parse(localStorage.getItem(k)||'[]');
+}
+function saveWishlist(wl){
+  const k=getWishlistKey();if(!k)return;
+  localStorage.setItem(k,JSON.stringify(wl));
+}
+function saveToWishlist(){
+  if(!currentUser){ openAuth('signup'); return; }
+  if(!lastAnalysisResult) return;
+  const wl=getWishlist();
+  const id='p_'+Date.now();
+  const redFlags=lastAnalysisResult.matched.filter(m=>m.ing.flag==='red').length;
+  wl.push({
+    id,
+    name:lastAnalysisResult.name,
+    raw:lastAnalysisResult.raw,
+    matchedIngs:lastAnalysisResult.matched.map(m=>m.ing.name),
+    scores:lastAnalysisResult.scores,
+    redFlags,
+    ingredientCount:lastAnalysisResult.matched.length+lastAnalysisResult.unknown.length,
+    at:Date.now()
+  });
+  saveWishlist(wl);
+  document.getElementById('save-btn').classList.add('saved');
+  document.getElementById('save-btn').textContent='✅ Saved!';
+}
+function removeFromWishlist(id){
+  const wl=getWishlist().filter(p=>p.id!==id);
+  saveWishlist(wl);
+  // also remove from routines
+  const rk=getRoutineKey();if(rk){
+    const r=getRoutine();r.am=r.am.filter(i=>i!==id);r.pm=r.pm.filter(i=>i!==id);
+    localStorage.setItem(rk,JSON.stringify(r));
+  }
+  renderDashboard();
+}
+function reanalyzeProduct(id){
+  const wl=getWishlist();const p=wl.find(x=>x.id===id);if(!p)return;
+  document.getElementById('product-name-input').value=p.name;
+  document.getElementById('ingredient-input').value=p.raw;
+  showPhase('phase-analyzer');
+  analyze();
+}
+
+/* ════════════════════════════════════════
+   ROUTINE BUILDER
+════════════════════════════════════════ */
+function getRoutineKey(){ return currentUser?`skinread_rt_${currentUser.email}`:null; }
+function getRoutine(){
+  const k=getRoutineKey();if(!k)return{am:[],pm:[]};
+  return JSON.parse(localStorage.getItem(k)||'{"am":[],"pm":[]}');
+}
+function saveRoutine(r){
+  const k=getRoutineKey();if(!k)return;
+  localStorage.setItem(k,JSON.stringify(r));
+}
+function addToRoutine(slot){
+  const sel=document.getElementById(slot+'-select');
+  const id=sel.value;if(!id)return;
+  const r=getRoutine();
+  if(!r[slot].includes(id)){r[slot].push(id);saveRoutine(r);}
+  renderRoutine();
+}
+function removeFromRoutine(slot,id){
+  const r=getRoutine();r[slot]=r[slot].filter(i=>i!==id);saveRoutine(r);renderRoutine();
+}
+function renderRoutine(){
+  const wl=getWishlist();const r=getRoutine();
+  ['am','pm'].forEach(slot=>{
+    const container=document.getElementById(slot+'-products');
+    container.innerHTML='';
+    if(r[slot].length===0){
+      container.innerHTML='<div class="routine-empty">No products added yet</div>';
+    } else {
+      r[slot].forEach(id=>{
+        const p=wl.find(x=>x.id===id);if(!p)return;
+        const div=document.createElement('div');div.className='routine-item';
+        div.innerHTML=`<span class="routine-item-name">${p.name}</span><button class="routine-item-remove" onclick="removeFromRoutine('${slot}','${id}')">✕</button>`;
+        container.appendChild(div);
+      });
+    }
+    const sel=document.getElementById(slot+'-select');
+    sel.innerHTML='<option value="">Add a product...</option>';
+    wl.filter(p=>!r[slot].includes(p.id)).forEach(p=>{
+      const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;sel.appendChild(opt);
+    });
+  });
+  renderClashes();
+}
+function renderClashes(){
+  const r=getRoutine();
+  const allIds=[...r.am,...r.pm];
+  const clashes=detectClashes(allIds);
+  const container=document.getElementById('clash-results');
+  if(clashes.length===0){
+    container.innerHTML='<div class="no-clashes">✅ No ingredient clashes detected — your routine looks safe!</div>';
+    return;
+  }
+  container.innerHTML=clashes.map(c=>`
+    <div class="clash-card ${c.severity}">
+      <span class="clash-icon">${c.icon}</span>
+      <div class="clash-body">
+        <div class="clash-title">${c.a} + ${c.b}<span class="clash-severity ${c.severity}">${c.severity.toUpperCase()}</span></div>
+        <div class="clash-note">${c.note}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   DASHBOARD RENDER
+════════════════════════════════════════ */
+function switchTab(tab){
+  document.querySelectorAll('.dash-tab').forEach((t,i)=>{
+    t.classList.toggle('active',['wishlist','routine'][i]===tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='routine') renderRoutine();
+}
+function renderDashboard(){
+  if(!currentUser){showPhase('phase-landing');openAuth('login');return;}
+  document.getElementById('dashboard-greeting').textContent=`Welcome back, ${currentUser.name.split(' ')[0]}! Here's your skin library.`;
+  renderWishlist();
+}
+function renderWishlist(){
+  const wl=getWishlist();
+  const container=document.getElementById('wishlist-content');
+  if(wl.length===0){
+    container.innerHTML=`<div class="wl-empty"><div class="wl-icon">💾</div><h3>Your wishlist is empty</h3><p>Analyze a product and hit "Save to Wishlist" to keep track of what you're testing.</p><button class="btn-primary" style="margin-top:20px" onclick="showPhase('phase-analyzer')">Go to Analyzer →</button></div>`;
+    return;
+  }
+  container.innerHTML=`<div class="wl-grid">${wl.map(p=>{
+    const d=new Date(p.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const redStat=p.redFlags>0?`<span class="wl-stat red">🚩 ${p.redFlags} flag${p.redFlags>1?'s':''}</span>`:'<span class="wl-stat green">✅ Clean</span>';
+    return `<div class="wl-card">
+      <div class="wl-card-top"><span class="wl-card-name">${p.name}</span><span class="wl-card-date">${d}</span></div>
+      <div class="wl-card-stats">
+        <span class="wl-stat">${p.ingredientCount} ingredients</span>
+        ${redStat}
+        <span class="wl-stat">💧 ${p.scores.hydrating}%</span>
+      </div>
+      <div class="wl-card-actions">
+        <button class="wl-action primary" onclick="reanalyzeProduct('${p.id}')">View Analysis</button>
+        <button class="wl-action secondary" onclick="removeFromWishlist('${p.id}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+restoreSession();
+checkLoginPrompt();
+</script>
+</body>
+</html>
