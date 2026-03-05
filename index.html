@@ -13,10 +13,10 @@
     h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
     .phase{display:none;} .phase.active{display:block;}
 
-    /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(12,12,12,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(12,12,12,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
     .logo{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
-    .nav-right{display:flex;align-items:center;gap:12px;}
+    .nav-right{display:flex;align-items:center;gap:10px;}
     .nav-btn{background:transparent;color:var(--text2);border:1px solid var(--border);padding:8px 20px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:600;cursor:pointer;font-size:.85rem;transition:border-color .2s,color .2s;}
     .nav-btn:hover{border-color:var(--text2);color:var(--text);}
     .nav-cta{background:linear-gradient(135deg,var(--pink),#c800ff);color:#fff;border:none;padding:9px 22px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;cursor:pointer;font-size:.85rem;transition:opacity .2s;}
@@ -25,11 +25,16 @@
     .user-chip:hover{border-color:var(--cyan);}
     .user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;font-family:'Space Grotesk',sans-serif;}
     .user-chip-name{font-size:.82rem;font-weight:600;color:var(--text);}
+    /* Basket Nav Button */
+    .basket-nav-btn{position:relative;background:var(--card);border:1px solid var(--border);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:border-color .2s,background .2s;flex-shrink:0;}
+    .basket-nav-btn:hover{border-color:var(--cyan);background:rgba(0,245,160,.07);}
+    .basket-count-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:50px;background:var(--pink);color:#fff;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;}
 
-    /* AUTH MODAL */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    /* ── AUTH MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
-    .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:40px;width:100%;max-width:440px;position:relative;}
+    .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:40px;width:100%;max-width:440px;position:relative;overflow:hidden;}
+    .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--purple),var(--cyan));}
     .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;line-height:1;}
     .modal-close:hover{color:var(--text);}
     .modal h2{font-size:1.8rem;font-weight:800;margin-bottom:6px;}
@@ -46,8 +51,66 @@
     .modal-switch a{color:var(--cyan);cursor:pointer;text-decoration:none;}
     .modal-switch a:hover{text-decoration:underline;}
     .modal-note{background:rgba(255,122,0,.08);border:1px solid rgba(255,122,0,.25);border-radius:10px;padding:12px 14px;font-size:.8rem;color:var(--orange);margin-bottom:20px;}
+    /* Quick skin type picker in signup */
+    .skin-pick-label{font-size:.82rem;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;display:block;}
+    .skin-pick-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:18px;}
+    .skin-pick-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;font-size:.74rem;font-weight:600;color:var(--text2);}
+    .skin-pick-btn:hover{border-color:var(--pink);}
+    .skin-pick-btn.sel{border-color:var(--cyan);background:rgba(0,245,160,.08);color:var(--cyan);}
+    .skin-pick-btn .sp-e{font-size:1.3rem;display:block;margin-bottom:4px;}
 
-    /* LANDING */
+    /* ── BASKET PANEL ── */
+    .basket-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;}
+    .basket-overlay.open{display:block;}
+    .basket-panel{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:96vw;background:var(--bg2);border-left:1px solid var(--border2);z-index:350;transform:translateX(110%);transition:transform .35s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
+    .basket-panel.open{transform:translateX(0);}
+    .basket-header{padding:20px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+    .basket-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:6px;}
+    .basket-skin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,245,160,.1);border:1px solid rgba(0,245,160,.25);padding:3px 11px;border-radius:50px;font-size:.76rem;font-weight:700;color:var(--cyan);}
+    .basket-no-skin{font-size:.76rem;color:var(--text3);cursor:pointer;}
+    .basket-no-skin span{text-decoration:underline;}
+    .basket-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:4px;}
+    .basket-close:hover{color:var(--text);}
+    .basket-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .basket-tab{flex:1;background:none;border:none;color:var(--text3);padding:11px 6px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.79rem;cursor:pointer;position:relative;transition:color .2s;}
+    .basket-tab:hover{color:var(--text2);}
+    .basket-tab.active{color:var(--text);}
+    .basket-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan));}
+    .basket-body{flex:1;overflow-y:auto;padding:16px;}
+    .basket-empty{text-align:center;padding:40px 16px;color:var(--text3);}
+    .basket-empty .be-icon{font-size:2.5rem;margin-bottom:12px;}
+    .basket-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:10px;}
+    .basket-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
+    .basket-item-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.87rem;flex:1;line-height:1.3;}
+    .basket-item-score{font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:50px;flex-shrink:0;white-space:nowrap;}
+    .basket-item-score.high{background:rgba(0,245,160,.15);color:var(--cyan);}
+    .basket-item-score.medium{background:rgba(255,122,0,.15);color:var(--orange);}
+    .basket-item-score.low{background:rgba(255,0,110,.12);color:var(--pink);}
+    .basket-item-actions{display:flex;gap:6px;align-items:center;}
+    .basket-am-btn,.basket-pm-btn{flex:1;padding:7px 4px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.73rem;cursor:pointer;transition:all .2s;text-align:center;}
+    .basket-am-btn{background:rgba(255,229,0,.1);border:1px solid rgba(255,229,0,.3);color:#ffe500;}
+    .basket-am-btn.added{background:rgba(255,229,0,.22);opacity:.75;cursor:default;}
+    .basket-pm-btn{background:rgba(180,95,255,.1);border:1px solid rgba(180,95,255,.3);color:var(--purple);}
+    .basket-pm-btn.added{background:rgba(180,95,255,.22);opacity:.75;cursor:default;}
+    .basket-item-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:4px 6px;border-radius:6px;transition:color .2s;}
+    .basket-item-remove:hover{color:var(--pink);}
+    .basket-footer{padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0;}
+    .basket-routine-slot{margin-bottom:16px;}
+    .basket-slot-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .basket-slot-products{display:flex;flex-direction:column;gap:6px;}
+    .basket-slot-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;font-size:.83rem;}
+    .basket-slot-item-name{font-weight:600;color:var(--text);flex:1;}
+    .basket-slot-empty{color:var(--text3);font-size:.82rem;text-align:center;padding:10px;border:1px dashed var(--border);border-radius:8px;}
+    .rec-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
+    .rec-section h4{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);margin-bottom:12px;}
+    .rec-section h4.avoid-hd{color:var(--pink);}
+    .rec-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .rec-item:last-child{border-bottom:none;padding-bottom:0;}
+    .rec-icon{font-size:1rem;flex-shrink:0;margin-top:2px;}
+    .rec-name{font-size:.86rem;font-weight:600;line-height:1.3;}
+    .rec-reason{font-size:.74rem;color:var(--text2);margin-top:2px;line-height:1.4;}
+
+    /* ── LANDING ── */
     .hero{padding:150px 40px 90px;max-width:1100px;margin:0 auto;text-align:center;}
     .hero-badge{display:inline-block;background:rgba(255,0,110,.12);border:1px solid rgba(255,0,110,.3);color:var(--pink);padding:6px 18px;border-radius:50px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px;}
     .hero h1{font-size:clamp(2.6rem,6.5vw,5rem);font-weight:800;line-height:1.06;margin-bottom:22px;}
@@ -66,7 +129,7 @@
     .feat-card p{color:var(--text2);font-size:.87rem;line-height:1.6;}
     .hero-footer{text-align:center;padding:50px 40px;color:var(--text3);font-size:.83rem;}
 
-    /* QUIZ */
+    /* ── QUIZ ── */
     .quiz-wrap{max-width:700px;margin:0 auto;padding:120px 40px 80px;}
     .quiz-header{text-align:center;margin-bottom:44px;}
     .quiz-header h2{font-size:2.2rem;font-weight:800;margin-bottom:10px;}
@@ -89,7 +152,7 @@
     .btn-next:hover{opacity:.88;}
     .btn-next:disabled{opacity:.32;cursor:not-allowed;}
 
-    /* RESULT */
+    /* ── RESULT ── */
     .result-wrap{max-width:700px;margin:0 auto;padding:120px 40px 80px;text-align:center;}
     .result-badge{display:inline-block;background:rgba(0,245,160,.12);border:1px solid rgba(0,245,160,.3);color:var(--cyan);padding:5px 16px;border-radius:50px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;}
     .result-emoji{font-size:4.5rem;margin-bottom:16px;display:block;}
@@ -113,7 +176,7 @@
     .result-cta:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,0,110,.35);}
     .retake-link{display:block;margin-top:14px;color:var(--text3);font-size:.87rem;cursor:pointer;text-decoration:underline;}
 
-    /* ANALYZER */
+    /* ── ANALYZER ── */
     .analyzer-wrap{max-width:880px;margin:0 auto;padding:120px 40px 80px;}
     .analyzer-header{text-align:center;margin-bottom:36px;}
     .analyzer-header h2{font-size:2.2rem;font-weight:800;margin-bottom:10px;}
@@ -181,19 +244,22 @@
     .login-prompt{text-align:center;padding:16px;background:rgba(255,0,110,.06);border:1px solid rgba(255,0,110,.2);border-radius:12px;margin-bottom:20px;font-size:.88rem;color:var(--text2);}
     .login-prompt a{color:var(--pink);cursor:pointer;font-weight:600;}
 
-    /* DASHBOARD */
+    /* ── DASHBOARD ── */
     .dashboard-wrap{max-width:1060px;margin:0 auto;padding:110px 40px 80px;}
-    .dashboard-header{margin-bottom:36px;}
+    .dashboard-header{margin-bottom:36px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .dashboard-header-left{}
     .dashboard-header h2{font-size:2rem;font-weight:800;margin-bottom:6px;}
     .dashboard-header p{color:var(--text2);font-size:.92rem;}
-    .dash-tabs{display:flex;gap:8px;margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:0;}
-    .dash-tab{background:none;border:none;color:var(--text3);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;padding:12px 20px 14px;cursor:pointer;position:relative;transition:color .2s;}
+    .logout-btn{background:transparent;color:var(--text3);border:1px solid var(--border);padding:8px 18px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:border-color .2s,color .2s;flex-shrink:0;}
+    .logout-btn:hover{border-color:var(--pink);color:var(--pink);}
+    .dash-tabs{display:flex;gap:0;margin-bottom:32px;border-bottom:1px solid var(--border);overflow-x:auto;}
+    .dash-tab{background:none;border:none;color:var(--text3);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;padding:12px 20px 14px;cursor:pointer;position:relative;transition:color .2s;white-space:nowrap;}
     .dash-tab:hover{color:var(--text2);}
     .dash-tab.active{color:var(--text);}
     .dash-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan));border-radius:2px 2px 0 0;}
     .tab-panel{display:none;} .tab-panel.active{display:block;}
 
-    /* WISHLIST */
+    /* Wishlist */
     .wl-empty{text-align:center;padding:60px 20px;color:var(--text3);}
     .wl-empty .wl-icon{font-size:3rem;margin-bottom:16px;}
     .wl-empty h3{font-size:1.2rem;color:var(--text2);margin-bottom:8px;}
@@ -214,7 +280,7 @@
     .wl-action.secondary{background:transparent;color:var(--text3);border:1px solid var(--border);}
     .wl-action.secondary:hover{border-color:var(--pink);color:var(--pink);}
 
-    /* ROUTINE BUILDER */
+    /* Routine Builder */
     .routine-intro{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:28px;font-size:.88rem;color:var(--text2);line-height:1.6;}
     .routine-intro strong{color:var(--text);}
     .routine-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
@@ -242,13 +308,50 @@
     .clash-card.medium{border:1px solid rgba(255,122,0,.35);background:rgba(255,122,0,.05);}
     .clash-card.low{border:1px solid rgba(255,200,0,.3);background:rgba(255,200,0,.04);}
     .clash-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
-    .clash-body{}
     .clash-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:4px;}
     .clash-note{font-size:.84rem;color:var(--text2);line-height:1.5;}
     .clash-severity{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:50px;margin-left:8px;vertical-align:middle;}
     .clash-severity.high{background:rgba(255,0,110,.2);color:var(--pink);}
     .clash-severity.medium{background:rgba(255,122,0,.2);color:var(--orange);}
     .clash-severity.low{background:rgba(255,200,0,.15);color:#ffd600;}
+
+    /* ── MY SUMMARY TAB ── */
+    .summary-skin-header{background:linear-gradient(135deg,rgba(0,245,160,.06),rgba(180,95,255,.06));border:1px solid rgba(0,245,160,.18);border-radius:16px;padding:22px 24px;margin-bottom:22px;display:flex;align-items:center;gap:16px;}
+    .ssh-emoji{font-size:2.8rem;flex-shrink:0;}
+    .ssh-info h3{font-size:1.2rem;font-weight:800;margin-bottom:4px;}
+    .ssh-info p{font-size:.85rem;color:var(--text2);line-height:1.6;}
+    .ssh-change{font-size:.78rem;color:var(--cyan);cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block;}
+    .routine-summary-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+    .rsc-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+    .rsc-icon{font-size:1.6rem;}
+    .rsc-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;}
+    .rsc-sub{font-size:.78rem;color:var(--text3);margin-top:1px;}
+    .routine-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+    .routine-step:last-child{margin-bottom:0;}
+    .step-num{width:28px;height:28px;border-radius:50%;background:var(--bg2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:800;color:var(--text3);flex-shrink:0;font-family:'Space Grotesk',sans-serif;}
+    .step-num.filled{background:rgba(0,245,160,.12);border-color:rgba(0,245,160,.32);color:var(--cyan);}
+    .step-content{flex:1;padding-top:3px;}
+    .step-type{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:2px;}
+    .step-product{font-size:.9rem;font-weight:600;color:var(--text);}
+    .step-product.empty{color:var(--text3);font-style:italic;font-weight:400;}
+    .step-benefit{font-size:.78rem;color:var(--text2);line-height:1.5;margin-top:3px;}
+    .no-skin-type-msg{text-align:center;padding:60px 20px;}
+    .no-skin-type-msg .ns-icon{font-size:3rem;margin-bottom:14px;}
+    .no-skin-type-msg h3{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+    .no-skin-type-msg p{color:var(--text2);font-size:.9rem;margin-bottom:22px;}
+    .sum-recs{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:18px;}
+    .sum-recs h4{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan);margin-bottom:14px;}
+    .sum-recs h4.avoid-hd{color:var(--pink);}
+    .sum-rec-item{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);}
+    .sum-rec-item:last-child{border-bottom:none;padding-bottom:0;}
+    .sum-rec-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+    .sum-rec-name{font-size:.9rem;font-weight:600;}
+    .sum-rec-why{font-size:.76rem;color:var(--text2);margin-top:2px;line-height:1.45;}
+    .sum-tips{background:linear-gradient(135deg,rgba(180,95,255,.06),rgba(0,245,160,.05));border:1px solid rgba(180,95,255,.2);border-radius:16px;padding:22px;margin-bottom:18px;}
+    .sum-tips h4{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin-bottom:14px;}
+    .sum-tip{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.87rem;color:var(--text2);line-height:1.5;}
+    .sum-tip:last-child{border-bottom:none;padding-bottom:0;}
+    .sum-tip::before{content:'✦';color:var(--purple);flex-shrink:0;margin-top:1px;}
 
     @media(max-width:640px){
       nav{padding:14px 18px;}
@@ -258,6 +361,8 @@
       .result-cols{grid-template-columns:1fr;}
       .features-grid{padding:0 18px;}
       .routine-grid{grid-template-columns:1fr;}
+      .basket-panel{width:100vw;}
+      .skin-pick-grid{grid-template-columns:repeat(3,1fr);}
     }
   </style>
 </head>
@@ -267,9 +372,12 @@
 <nav>
   <span class="logo" onclick="showPhase('phase-landing')">SkinRead</span>
   <div class="nav-right">
+    <button class="basket-nav-btn" onclick="openBasket()" title="My Skin Basket">
+      🧴<span class="basket-count-badge" id="basket-count" style="display:none">0</span>
+    </button>
     <div id="nav-logged-out" style="display:flex;gap:10px;">
       <button class="nav-btn" onclick="openAuth('login')">Sign In</button>
-      <button class="nav-cta" onclick="openAuth('signup')">Sign Up Free</button>
+      <button class="nav-cta" onclick="openAuth('signup')">Get Started Free</button>
     </div>
     <div id="nav-logged-in" style="display:none;gap:10px;align-items:center;">
       <button class="nav-btn" onclick="showPhase('phase-analyzer')">Analyzer</button>
@@ -285,9 +393,9 @@
 <div class="modal-overlay" id="auth-modal">
   <div class="modal">
     <button class="modal-close" onclick="closeAuth()">✕</button>
-    <div class="modal-note">🔒 Demo mode: data stored locally in your browser only. No real server.</div>
+    <div class="modal-note">🔒 Demo mode — all data stored privately in your browser. No server needed.</div>
     <h2 id="auth-title">Sign In</h2>
-    <p class="modal-sub" id="auth-sub">Welcome back — your wishlist is waiting.</p>
+    <p class="modal-sub" id="auth-sub">Welcome back — your skin basket is waiting.</p>
     <div class="form-group">
       <label>Email</label>
       <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
@@ -300,20 +408,52 @@
       <label>Your Name</label>
       <input type="text" id="auth-name" placeholder="e.g. Elizabete">
     </div>
+    <!-- Quick skin type on signup -->
+    <div id="auth-skin-group" style="display:none;">
+      <span class="skin-pick-label">Your Skin Type? (optional — you can take the quiz too)</span>
+      <div class="skin-pick-grid">
+        <div class="skin-pick-btn" onclick="selectSignupSkin(this,'oily')"><span class="sp-e">💦</span>Oily</div>
+        <div class="skin-pick-btn" onclick="selectSignupSkin(this,'dry')"><span class="sp-e">🌵</span>Dry</div>
+        <div class="skin-pick-btn" onclick="selectSignupSkin(this,'sensitive')"><span class="sp-e">🌸</span>Sensitive</div>
+        <div class="skin-pick-btn" onclick="selectSignupSkin(this,'combination')"><span class="sp-e">☯️</span>Combo</div>
+        <div class="skin-pick-btn" onclick="selectSignupSkin(this,'mature')"><span class="sp-e">🌿</span>Mature</div>
+      </div>
+    </div>
     <div class="form-error" id="auth-error"></div>
     <button class="modal-submit" id="auth-submit" onclick="submitAuth()">Sign In</button>
     <div class="modal-switch" id="auth-switch">
-      Don't have an account? <a onclick="toggleAuthMode()">Sign Up</a>
+      Don't have an account? <a onclick="toggleAuthMode()">Sign Up Free</a>
     </div>
+  </div>
+</div>
+
+<!-- ══ BASKET PANEL ══ -->
+<div class="basket-overlay" id="basket-overlay" onclick="closeBasket()"></div>
+<div class="basket-panel" id="basket-panel">
+  <div class="basket-header">
+    <div class="basket-header-left">
+      <div class="basket-title">🧴 My Skin Basket</div>
+      <div id="basket-skin-indicator" style="margin-top:6px;"></div>
+    </div>
+    <button class="basket-close" onclick="closeBasket()">✕</button>
+  </div>
+  <div class="basket-tabs">
+    <button class="basket-tab active" onclick="switchBasketTab('products')" id="bt-products">💾 Saved</button>
+    <button class="basket-tab" onclick="switchBasketTab('routine')" id="bt-routine">📅 Routine</button>
+    <button class="basket-tab" onclick="switchBasketTab('recs')" id="bt-recs">✦ Skin Tips</button>
+  </div>
+  <div class="basket-body" id="basket-body"></div>
+  <div class="basket-footer" id="basket-footer" style="display:none;">
+    <button class="btn-primary" style="width:100%;padding:13px;border-radius:12px;font-size:.92rem;" onclick="showPhase('phase-dashboard');closeBasket()">Open Full Dashboard →</button>
   </div>
 </div>
 
 <!-- ══ PHASE: LANDING ══ -->
 <div id="phase-landing" class="phase active">
   <div class="hero">
-    <div class="hero-badge">✦ Free · No Login · Instant Results</div>
+    <div class="hero-badge">✦ Free · No Login Required · Instant Results</div>
     <h1>Read Your Skin.<br><span>Know What's Inside.</span></h1>
-    <p>Paste any skincare ingredient list, get a full breakdown, save products to your wishlist, and build your perfect routine.</p>
+    <p>Paste any skincare ingredient list, get a full breakdown, save products to your basket, and build your perfect daily routine.</p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="startQuiz()">✦ Take Skin Type Quiz</button>
       <button class="btn-secondary" onclick="showPhase('phase-analyzer')">Skip to Analyzer →</button>
@@ -322,7 +462,7 @@
   <div class="features-grid">
     <div class="feat-card"><div class="feat-icon">🧬</div><h3>Ingredient Decoded</h3><p>Every INCI name explained in plain English — what it does and why it's there.</p></div>
     <div class="feat-card"><div class="feat-icon">🎯</div><h3>Your Skin Profile</h3><p>5-question quiz to find your skin type, then highlighted compatibility across all ingredients.</p></div>
-    <div class="feat-card"><div class="feat-icon">💾</div><h3>Save &amp; Compare</h3><p>Save analyzed products to your wishlist and build AM/PM routines with clash detection.</p></div>
+    <div class="feat-card"><div class="feat-icon">🧴</div><h3>Skin Basket</h3><p>Save products, assign them to AM or PM, and see how well they match your skin type.</p></div>
     <div class="feat-card"><div class="feat-icon">⚡</div><h3>Clash Detection</h3><p>We flag dangerous ingredient combos — like retinol + AHAs or vitamin C + copper peptides.</p></div>
   </div>
   <p class="hero-footer">Made with 💗 for skincare lovers · No data stored on servers · 100% private</p>
@@ -372,7 +512,7 @@
       <a class="skin-banner-change" onclick="startQuiz()">Change ↺</a>
     </div>
     <div id="analyzer-login-prompt" class="login-prompt" style="display:none;">
-      💾 <a onclick="openAuth('signup')">Create a free account</a> or <a onclick="openAuth('login')">sign in</a> to save products to your wishlist.
+      🧴 <a onclick="openAuth('signup')">Create a free account</a> or <a onclick="openAuth('login')">sign in</a> to save products to your skin basket.
     </div>
     <div class="input-box">
       <div class="input-row">
@@ -391,7 +531,7 @@
       <div class="results-header">
         <h3 id="results-title">Ingredient Breakdown</h3>
         <div class="results-actions">
-          <button class="save-btn" id="save-btn" onclick="saveToWishlist()">💾 Save to Wishlist</button>
+          <button class="save-btn" id="save-btn" onclick="saveToWishlist()">🧴 Save to Basket</button>
           <button class="clear-btn" onclick="clearResults()">Clear ✕</button>
         </div>
       </div>
@@ -405,23 +545,27 @@
 <div id="phase-dashboard" class="phase">
   <div class="dashboard-wrap">
     <div class="dashboard-header">
-      <h2>My Dashboard</h2>
-      <p id="dashboard-greeting">Manage your saved products and build your routine.</p>
+      <div class="dashboard-header-left">
+        <h2>My Dashboard</h2>
+        <p id="dashboard-greeting">Manage your skin basket and build your routine.</p>
+      </div>
+      <button class="logout-btn" onclick="logoutUser()">Sign Out</button>
     </div>
     <div class="dash-tabs">
-      <button class="dash-tab active" onclick="switchTab('wishlist')">💾 Wishlist</button>
+      <button class="dash-tab active" onclick="switchTab('wishlist')">🧴 Skin Basket</button>
       <button class="dash-tab" onclick="switchTab('routine')">🌅 Routine Builder</button>
+      <button class="dash-tab" onclick="switchTab('summary')">📋 My Summary</button>
     </div>
 
-    <!-- Wishlist Tab -->
+    <!-- Skin Basket Tab -->
     <div class="tab-panel active" id="tab-wishlist">
       <div id="wishlist-content"></div>
     </div>
 
-    <!-- Routine Tab -->
+    <!-- Routine Builder Tab -->
     <div class="tab-panel" id="tab-routine">
       <div class="routine-intro">
-        <strong>How it works:</strong> Add saved products to your AM or PM routine. SkinRead will detect ingredient clashes and tell you what to watch out for — like using retinol and AHAs on the same night.
+        <strong>How it works:</strong> Add saved products to your AM or PM routine. SkinRead detects ingredient clashes and tells you what to watch out for — like using retinol and AHAs on the same night.
       </div>
       <div class="routine-grid">
         <div class="routine-slot">
@@ -452,6 +596,11 @@
         <div id="clash-results"></div>
       </div>
     </div>
+
+    <!-- My Summary Tab -->
+    <div class="tab-panel" id="tab-summary">
+      <div id="summary-content"></div>
+    </div>
   </div>
 </div>
 
@@ -461,6 +610,7 @@
 ════════════════════════════════════════ */
 let authMode = 'login';
 let currentUser = null;
+let signupSkinType = null;
 
 function hashPw(pw){ return btoa(pw + 'skinread_salt_v1'); }
 
@@ -472,6 +622,8 @@ function openAuth(mode){
   document.getElementById('auth-password').value='';
   document.getElementById('auth-name').value='';
   document.getElementById('auth-error').classList.remove('show');
+  signupSkinType = null;
+  document.querySelectorAll('.skin-pick-btn').forEach(b=>b.classList.remove('sel'));
   setTimeout(()=>document.getElementById('auth-email').focus(), 100);
 }
 function closeAuth(){ document.getElementById('auth-modal').classList.remove('open'); }
@@ -479,15 +631,22 @@ function setAuthMode(mode){
   authMode=mode;
   const isSignup = mode==='signup';
   document.getElementById('auth-title').textContent = isSignup ? 'Create Account' : 'Sign In';
-  document.getElementById('auth-sub').textContent = isSignup ? 'Start saving products and building your routine.' : 'Welcome back — your wishlist is waiting.';
+  document.getElementById('auth-sub').textContent = isSignup ? 'Start saving products and building your routine.' : 'Welcome back — your skin basket is waiting.';
   document.getElementById('auth-submit').textContent = isSignup ? 'Create Account' : 'Sign In';
   document.getElementById('auth-name-group').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-skin-group').style.display = isSignup ? 'block' : 'none';
   document.getElementById('auth-switch').innerHTML = isSignup
     ? 'Already have an account? <a onclick="toggleAuthMode()">Sign In</a>'
-    : "Don't have an account? <a onclick=\"toggleAuthMode()\">Sign Up</a>";
+    : "Don't have an account? <a onclick=\"toggleAuthMode()\">Sign Up Free</a>";
 }
 function toggleAuthMode(){ setAuthMode(authMode==='login'?'signup':'login'); }
 function showError(msg){ const el=document.getElementById('auth-error'); el.textContent=msg; el.classList.add('show'); }
+
+function selectSignupSkin(el, type){
+  signupSkinType = type;
+  document.querySelectorAll('.skin-pick-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
 
 function submitAuth(){
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
@@ -504,13 +663,17 @@ function submitAuth(){
   if(authMode==='signup'){
     if(!name){ showError('Please enter your name.'); return; }
     if(users.find(u=>u.email===email)){ showError('An account with this email already exists.'); return; }
-    const newUser = { email, passwordHash: hashPw(pw), name, createdAt: Date.now() };
+    const newUser = { email, passwordHash: hashPw(pw), name, createdAt: Date.now(), skinType: signupSkinType||null };
     users.push(newUser);
     localStorage.setItem('skinread_users', JSON.stringify(users));
+    // Apply quick skin pick
+    if(signupSkinType){ detectedSkinType = signupSkinType; }
     loginUser(newUser);
   } else {
     const user = users.find(u=>u.email===email);
     if(!user || user.passwordHash!==hashPw(pw)){ showError('Incorrect email or password.'); return; }
+    // Restore saved skin type
+    if(user.skinType && !detectedSkinType){ detectedSkinType = user.skinType; }
     loginUser(user);
   }
 }
@@ -520,6 +683,7 @@ function loginUser(user){
   localStorage.setItem('skinread_session', JSON.stringify({ email: user.email, loginAt: Date.now() }));
   closeAuth();
   updateNavForUser();
+  updateBasketCount();
   checkLoginPrompt();
 }
 
@@ -527,6 +691,7 @@ function logoutUser(){
   currentUser = null;
   localStorage.removeItem('skinread_session');
   updateNavForUser();
+  updateBasketCount();
   checkLoginPrompt();
   showPhase('phase-landing');
 }
@@ -536,7 +701,12 @@ function restoreSession(){
   if(!session) return;
   const users = JSON.parse(localStorage.getItem('skinread_users') || '[]');
   const user = users.find(u=>u.email===session.email);
-  if(user){ currentUser=user; updateNavForUser(); }
+  if(user){
+    currentUser=user;
+    if(user.skinType && !detectedSkinType){ detectedSkinType = user.skinType; }
+    updateNavForUser();
+    updateBasketCount();
+  }
 }
 
 function updateNavForUser(){
@@ -573,7 +743,14 @@ const QUESTIONS = [
   { icon:'🪞', question:'What is your main skin concern?',
     options:[{emoji:'💧',text:'Shine, oiliness, or large pores',scores:{oily:3}},{emoji:'🌊',text:'Dryness, dullness, or dehydration',scores:{dry:3}},{emoji:'🌺',text:'Redness, sensitivity, or rosacea',scores:{sensitive:3}},{emoji:'🌿',text:'Fine lines, firmness, and ageing',scores:{mature:4,dry:1}}]}
 ];
-const SKIN_RESULTS={oily:{emoji:'💦',name:'Oily Skin',tagline:'Glow that goes a little too hard.',description:'Your skin produces excess sebum, leading to shine, enlarged pores, and frequent breakouts. The upside? Oily skin ages slower and stays naturally moisturised.',lookFor:['Niacinamide','Salicylic Acid','Zinc PCA','Clay (Kaolin)','Lightweight Hyaluronic Acid'],avoid:['Heavy oils & butters','Denatured alcohol','Comedogenic silicones','Rich creamy textures'],tips:['Double cleanse at night to clear excess sebum.','Use gel or serum moisturisers — skip heavy creams.','SPF gel formulas work best for oily types.']},dry:{emoji:'🌵',name:'Dry Skin',tagline:'Thirsty for hydration, all day every day.',description:'Your skin barrier produces less oil and struggles to retain moisture. It may feel tight, look flaky, and show fine lines more readily — but responds beautifully to rich nourishing formulas.',lookFor:['Ceramides','Hyaluronic Acid','Shea Butter','Squalane','Glycerin','Fatty alcohols'],avoid:['Harsh surfactants (SLS/SLES)','High-strength acids','Drying alcohols','Over-exfoliation'],tips:['Apply serums to damp skin to seal in moisture.','Use a rich night cream or facial oil at night.','Avoid hot water — it strips the skin barrier.']},sensitive:{emoji:'🌸',name:'Sensitive Skin',tagline:'Your skin feels everything — deeply.',description:'Your skin reacts easily to ingredients, environmental triggers, and stress. Redness, stinging, and flare-ups are common. Keep your routine simple and fragrance-free.',lookFor:['Centella Asiatica','Ceramides','Allantoin','Panthenol (B5)','Oat extract'],avoid:['Fragrance (parfum)','Essential oils','Denatured alcohol','High-strength retinol / acids'],tips:['Patch test every new product for 48 hours.','Simplify your routine — fewer steps is better.','Look for "fragrance-free" not just "unscented".']},combination:{emoji:'☯️',name:'Combination Skin',tagline:'Oily here, dry there — balancing act.',description:'Your T-zone gets oily while your cheeks may feel normal to dry. You need a balanced routine that doesn\'t over-moisturise or over-strip.',lookFor:['Niacinamide','Lightweight Hyaluronic Acid','Lactic Acid','Balancing toners'],avoid:['Very heavy creams on T-zone','Stripping toners all over','Heavy oils on nose area'],tips:['Use a lightweight gel moisturiser all over.','Multi-masking: clay on T-zone, hydrating on cheeks.','A BHA serum once or twice a week helps balance both zones.']},mature:{emoji:'🌿',name:'Mature Skin',tagline:'Wisdom in every fine line.',description:'Your skin shows signs of ageing — fine lines, loss of firmness, and slower cell turnover. It benefits from targeted anti-ageing actives, rich moisturisers, and diligent SPF.',lookFor:['Retinol / Retinoids','Peptides','Vitamin C','Hyaluronic Acid','Ceramides','SPF 50+'],avoid:['Drying formulas','Harsh physical scrubs','High-alcohol content','Skipping SPF'],tips:['Start retinol slow — once a week to start.','Layer: serum → oil → cream for maximum moisture.','Vitamin C in the morning, retinol at night.']}};
+
+const SKIN_RESULTS={
+  oily:{emoji:'💦',name:'Oily Skin',tagline:'Glow that goes a little too hard.',description:'Your skin produces excess sebum, leading to shine, enlarged pores, and frequent breakouts. The upside? Oily skin ages slower and stays naturally moisturised.',lookFor:['Niacinamide','Salicylic Acid','Zinc PCA','Clay (Kaolin)','Lightweight Hyaluronic Acid'],avoid:['Heavy oils & butters','Denatured alcohol','Comedogenic silicones','Rich creamy textures'],tips:['Double cleanse at night to clear excess sebum.','Use gel or serum moisturisers — skip heavy creams.','SPF gel formulas work best for oily types.']},
+  dry:{emoji:'🌵',name:'Dry Skin',tagline:'Thirsty for hydration, all day every day.',description:'Your skin barrier produces less oil and struggles to retain moisture. It may feel tight, look flaky, and show fine lines more readily — but responds beautifully to rich nourishing formulas.',lookFor:['Ceramides','Hyaluronic Acid','Shea Butter','Squalane','Glycerin','Fatty alcohols'],avoid:['Harsh surfactants (SLS/SLES)','High-strength acids','Drying alcohols','Over-exfoliation'],tips:['Apply serums to damp skin to seal in moisture.','Use a rich night cream or facial oil at night.','Avoid hot water — it strips the skin barrier.']},
+  sensitive:{emoji:'🌸',name:'Sensitive Skin',tagline:'Your skin feels everything — deeply.',description:'Your skin reacts easily to ingredients, environmental triggers, and stress. Redness, stinging, and flare-ups are common. Keep your routine simple and fragrance-free.',lookFor:['Centella Asiatica','Ceramides','Allantoin','Panthenol (B5)','Oat extract'],avoid:['Fragrance (parfum)','Essential oils','Denatured alcohol','High-strength retinol / acids'],tips:['Patch test every new product for 48 hours.','Simplify your routine — fewer steps is better.','Look for "fragrance-free" not just "unscented".']},
+  combination:{emoji:'☯️',name:'Combination Skin',tagline:'Oily here, dry there — balancing act.',description:'Your T-zone gets oily while your cheeks may feel normal to dry. You need a balanced routine that doesn\'t over-moisturise or over-strip.',lookFor:['Niacinamide','Lightweight Hyaluronic Acid','Lactic Acid','Balancing toners'],avoid:['Very heavy creams on T-zone','Stripping toners all over','Heavy oils on nose area'],tips:['Use a lightweight gel moisturiser all over.','Multi-masking: clay on T-zone, hydrating on cheeks.','A BHA serum once or twice a week helps balance both zones.']},
+  mature:{emoji:'🌿',name:'Mature Skin',tagline:'Wisdom in every fine line.',description:'Your skin shows signs of ageing — fine lines, loss of firmness, and slower cell turnover. It benefits from targeted anti-ageing actives, rich moisturisers, and diligent SPF.',lookFor:['Retinol / Retinoids','Peptides','Vitamin C','Hyaluronic Acid','Ceramides','SPF 50+'],avoid:['Drying formulas','Harsh physical scrubs','High-alcohol content','Skipping SPF'],tips:['Start retinol slow — once a week to start.','Layer: serum → oil → cream for maximum moisture.','Vitamin C in the morning, retinol at night.']}
+};
 
 let currentQ=0, answers=[null,null,null,null,null], detectedSkinType=null;
 
@@ -615,7 +792,10 @@ function calculateSkinType(){
   return Object.entries(s).sort((a,b)=>b[1]-a[1])[0][0];
 }
 function showResult(){
-  detectedSkinType=calculateSkinType();const r=SKIN_RESULTS[detectedSkinType];
+  detectedSkinType=calculateSkinType();
+  // Save skin type to user profile if logged in
+  if(currentUser){ saveSkinTypeToProfile(detectedSkinType); }
+  const r=SKIN_RESULTS[detectedSkinType];
   document.getElementById('res-emoji').textContent=r.emoji;
   document.getElementById('res-name').textContent=r.name;
   document.getElementById('res-tagline').textContent=r.tagline;
@@ -624,6 +804,11 @@ function showResult(){
   document.getElementById('res-avoid').innerHTML=r.avoid.map(i=>`<li>${i}</li>`).join('');
   document.getElementById('res-tips').innerHTML=r.tips.map(t=>`<li>${t}</li>`).join('');
   showPhase('phase-result');
+}
+function saveSkinTypeToProfile(type){
+  const users = JSON.parse(localStorage.getItem('skinread_users')||'[]');
+  const idx = users.findIndex(u=>u.email===currentUser.email);
+  if(idx>-1){ users[idx].skinType=type; localStorage.setItem('skinread_users',JSON.stringify(users)); currentUser.skinType=type; }
 }
 function goToAnalyzer(){
   showPhase('phase-analyzer');
@@ -703,7 +888,7 @@ const CLASHES=[
   {a:'Retinol',b:'Lactic Acid',severity:'high',icon:'🔥',note:'AHAs and retinol together can cause significant irritation and barrier damage. Alternate between nights.'},
   {a:'Retinol',b:'Salicylic Acid',severity:'high',icon:'🔥',note:'Over-exfoliation risk. Both are strong actives — separate them into different nights.'},
   {a:'Retinol',b:'Vitamin C',severity:'medium',icon:'⚡',note:'Both are unstable and can degrade each other. Use Vitamin C in the morning, retinol at night.'},
-  {a:'Vitamin C',inci_b:'Copper Tripeptide-1',b:'Copper Peptide',severity:'high',icon:'🔥',note:'Copper ions can degrade vitamin C molecules, rendering both less effective. Use on separate days.'},
+  {a:'Vitamin C',b:'Copper Peptide',severity:'high',icon:'🔥',note:'Copper ions can degrade vitamin C molecules, rendering both less effective. Use on separate days.'},
   {a:'Retinol',b:'Retinyl Palmitate',severity:'low',icon:'⚠️',note:'Two forms of vitamin A in the same routine may cause cumulative irritation — consider removing one.'},
   {a:'Glycolic Acid',b:'Salicylic Acid',severity:'medium',icon:'⚡',note:'Combining multiple exfoliating acids increases over-exfoliation risk. Use one at a time.'},
   {a:'Lactic Acid',b:'Salicylic Acid',severity:'medium',icon:'⚡',note:'Stacking exfoliants can compromise the skin barrier. Consider alternating days.'},
@@ -717,9 +902,7 @@ function detectClashes(productIds){
   const wishlist=getWishlist();
   const products=productIds.map(id=>wishlist.find(p=>p.id===id)).filter(Boolean);
   const allIngNames=[];
-  products.forEach(p=>{
-    (p.matchedIngs||[]).forEach(name=>allIngNames.push(name));
-  });
+  products.forEach(p=>{ (p.matchedIngs||[]).forEach(name=>allIngNames.push(name)); });
   const found=[];
   CLASHES.forEach(clash=>{
     const hasA = allIngNames.some(n=>n.toLowerCase().includes(clash.a.toLowerCase()));
@@ -768,7 +951,7 @@ function analyze(){
   lastAnalysisResult={name:document.getElementById('product-name-input').value.trim()||'Unnamed Product',raw,matched,unknown,scores:buildScores(matched.map(m=>m.ing)),at:Date.now()};
   renderResults(matched,unknown);
   document.getElementById('save-btn').classList.remove('saved');
-  document.getElementById('save-btn').textContent='💾 Save to Wishlist';
+  document.getElementById('save-btn').textContent='🧴 Save to Basket';
 }
 function renderResults(matched,unknown){
   const sec=document.getElementById('results-section');
@@ -810,7 +993,7 @@ function clearResults(){
 }
 
 /* ════════════════════════════════════════
-   WISHLIST
+   WISHLIST / BASKET STORAGE
 ════════════════════════════════════════ */
 function getWishlistKey(){ return currentUser?`skinread_wl_${currentUser.email}`:null; }
 function getWishlist(){
@@ -838,17 +1021,18 @@ function saveToWishlist(){
     at:Date.now()
   });
   saveWishlist(wl);
+  updateBasketCount();
   document.getElementById('save-btn').classList.add('saved');
-  document.getElementById('save-btn').textContent='✅ Saved!';
+  document.getElementById('save-btn').textContent='✅ Saved to Basket!';
 }
 function removeFromWishlist(id){
   const wl=getWishlist().filter(p=>p.id!==id);
   saveWishlist(wl);
-  // also remove from routines
   const rk=getRoutineKey();if(rk){
     const r=getRoutine();r.am=r.am.filter(i=>i!==id);r.pm=r.pm.filter(i=>i!==id);
     localStorage.setItem(rk,JSON.stringify(r));
   }
+  updateBasketCount();
   renderDashboard();
 }
 function reanalyzeProduct(id){
@@ -924,36 +1108,258 @@ function renderClashes(){
 }
 
 /* ════════════════════════════════════════
+   BASKET PANEL
+════════════════════════════════════════ */
+let basketTabActive = 'products';
+
+function openBasket(){
+  if(!currentUser){ openAuth('signup'); return; }
+  basketTabActive = 'products';
+  document.querySelectorAll('.basket-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  renderBasketPanel();
+  document.getElementById('basket-overlay').classList.add('open');
+  document.getElementById('basket-panel').classList.add('open');
+}
+function closeBasket(){
+  document.getElementById('basket-overlay').classList.remove('open');
+  document.getElementById('basket-panel').classList.remove('open');
+}
+function switchBasketTab(tab){
+  basketTabActive=tab;
+  const tabs=['products','routine','recs'];
+  document.querySelectorAll('.basket-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  renderBasketPanel();
+}
+function updateBasketCount(){
+  const count = currentUser ? getWishlist().length : 0;
+  const badge = document.getElementById('basket-count');
+  if(badge){ badge.textContent=count; badge.style.display=count>0?'flex':'none'; }
+}
+function getSkinMatchScore(product){
+  if(!detectedSkinType || !product.matchedIngs) return 50;
+  let score=0, total=0;
+  product.matchedIngs.forEach(name=>{
+    const ing=INGREDIENTS.find(i=>i.name===name);
+    if(!ing)return;
+    total++;
+    if(ing.goodFor.includes(detectedSkinType)) score+=2;
+    else if(ing.flag==='red') score-=1;
+    else score+=1;
+  });
+  if(total===0) return 50;
+  return Math.min(100,Math.max(0,Math.round((score/total/2)*100)));
+}
+
+function renderBasketPanel(){
+  const wl=getWishlist();
+  const body=document.getElementById('basket-body');
+  const footer=document.getElementById('basket-footer');
+
+  // Skin indicator
+  const ind=document.getElementById('basket-skin-indicator');
+  if(ind){
+    if(detectedSkinType){
+      const r=SKIN_RESULTS[detectedSkinType];
+      ind.innerHTML=`<span class="basket-skin-badge">${r.emoji} ${r.name}</span>`;
+    } else {
+      ind.innerHTML=`<span class="basket-no-skin">No skin type set — <span onclick="startQuiz();closeBasket()">take quiz</span></span>`;
+    }
+  }
+
+  if(basketTabActive==='products'){
+    if(wl.length===0){
+      body.innerHTML=`<div class="basket-empty"><div class="be-icon">🧴</div><p style="font-size:.9rem;margin-bottom:8px">Your basket is empty.</p><p style="font-size:.82rem;color:var(--text3)">Analyze a product and hit "Save to Basket" to add it here.</p><button class="btn-primary" style="margin-top:16px;padding:11px 24px;font-size:.9rem" onclick="showPhase('phase-analyzer');closeBasket()">Go to Analyzer →</button></div>`;
+      footer.style.display='none'; return;
+    }
+    const r=getRoutine();
+    body.innerHTML=wl.map(p=>{
+      const score=getSkinMatchScore(p);
+      const sc=score>=70?'high':score>=40?'medium':'low';
+      const sl=score>=70?'✓ Great Match':score>=40?'~ Okay':'✕ Check Flags';
+      const inAM=r.am.includes(p.id), inPM=r.pm.includes(p.id);
+      return `<div class="basket-item">
+        <div class="basket-item-top">
+          <span class="basket-item-name">${p.name}</span>
+          <span class="basket-item-score ${sc}">${sl}</span>
+        </div>
+        <div class="basket-item-actions">
+          <button class="basket-am-btn${inAM?' added':''}" onclick="${inAM?'':''}" ${inAM?'disabled':''} onclick="quickBasketAdd('${p.id}','am')">${inAM?'✓ In AM':'＋ AM'}</button>
+          <button class="basket-pm-btn${inPM?' added':''}" ${inPM?'disabled':''} onclick="quickBasketAdd('${p.id}','pm')">${inPM?'✓ In PM':'＋ PM'}</button>
+          <button class="basket-item-remove" onclick="removeFromWishlistBasket('${p.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+    footer.style.display='block';
+
+  } else if(basketTabActive==='routine'){
+    const r=getRoutine();
+    const amP=r.am.map(id=>wl.find(p=>p.id===id)).filter(Boolean);
+    const pmP=r.pm.map(id=>wl.find(p=>p.id===id)).filter(Boolean);
+    body.innerHTML=`
+      <div class="basket-routine-slot">
+        <div class="basket-slot-label">🌅 Morning Routine</div>
+        <div class="basket-slot-products">${amP.length>0?amP.map(p=>`<div class="basket-slot-item"><span class="basket-slot-item-name">${p.name}</span><button class="basket-item-remove" onclick="removeFromRoutineBasket('am','${p.id}')">✕</button></div>`).join(''):'<div class="basket-slot-empty">No AM products yet — go to Saved tab to add</div>'}</div>
+      </div>
+      <div class="basket-routine-slot">
+        <div class="basket-slot-label">🌙 Evening Routine</div>
+        <div class="basket-slot-products">${pmP.length>0?pmP.map(p=>`<div class="basket-slot-item"><span class="basket-slot-item-name">${p.name}</span><button class="basket-item-remove" onclick="removeFromRoutineBasket('pm','${p.id}')">✕</button></div>`).join(''):'<div class="basket-slot-empty">No PM products yet</div>'}</div>
+      </div>`;
+    footer.style.display=(amP.length>0||pmP.length>0)?'block':'none';
+
+  } else if(basketTabActive==='recs'){
+    if(!detectedSkinType){
+      body.innerHTML=`<div class="basket-empty"><div class="be-icon">🌸</div><p style="font-size:.9rem;margin-bottom:10px">Take the Skin Type Quiz to get personalised ingredient recommendations.</p><button class="btn-primary" style="margin-top:12px;padding:12px 28px;font-size:.9rem" onclick="startQuiz();closeBasket()">Take Quiz →</button></div>`;
+      footer.style.display='none'; return;
+    }
+    const r=SKIN_RESULTS[detectedSkinType];
+    const topIngs=INGREDIENTS.filter(i=>i.goodFor.includes(detectedSkinType)&&i.flag==='green').slice(0,7);
+    const avoidIngs=INGREDIENTS.filter(i=>i.flag==='red'||(!i.goodFor.includes(detectedSkinType)&&i.flag==='yellow')).slice(0,4);
+    body.innerHTML=`
+      <div style="background:linear-gradient(135deg,rgba(0,245,160,.07),rgba(180,95,255,.07));border:1px solid rgba(0,245,160,.18);border-radius:12px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:2.2rem">${r.emoji}</span>
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:.98rem">${r.name}</div><div style="font-size:.8rem;color:var(--text2);margin-top:2px;font-style:italic">${r.tagline}</div></div>
+      </div>
+      <div class="rec-section">
+        <h4>✦ Best Ingredients for You</h4>
+        ${topIngs.map(i=>`<div class="rec-item"><span class="rec-icon">${i.flagLabel.split(' ')[0]}</span><div><div class="rec-name">${i.name}</div><div class="rec-reason">${i.what.substring(0,85)}…</div></div></div>`).join('')}
+      </div>
+      <div class="rec-section">
+        <h4 class="avoid-hd">✕ Watch Out For</h4>
+        ${avoidIngs.map(i=>`<div class="rec-item"><span class="rec-icon">⚠️</span><div><div class="rec-name">${i.name}</div><div class="rec-reason">${i.what.substring(0,85)}…</div></div></div>`).join('')}
+      </div>
+      <div style="background:rgba(180,95,255,.07);border:1px solid rgba(180,95,255,.2);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin-bottom:10px;">✦ Smart Tips</div>
+        ${r.tips.map(t=>`<div style="font-size:.85rem;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;"><span style="color:var(--purple)">✦</span>${t}</div>`).join('')}
+      </div>`;
+    footer.style.display='none';
+  }
+}
+
+function quickBasketAdd(id,slot){
+  if(!currentUser) return;
+  const r=getRoutine();
+  if(!r[slot].includes(id)){r[slot].push(id);saveRoutine(r);}
+  renderBasketPanel();
+}
+function removeFromWishlistBasket(id){
+  const wl=getWishlist().filter(p=>p.id!==id);
+  saveWishlist(wl);
+  updateBasketCount();
+  renderBasketPanel();
+}
+function removeFromRoutineBasket(slot,id){
+  const r=getRoutine();r[slot]=r[slot].filter(i=>i!==id);saveRoutine(r);renderBasketPanel();
+}
+
+/* ════════════════════════════════════════
+   MY SUMMARY TAB
+════════════════════════════════════════ */
+const AM_STEPS=[
+  {type:'Cleanser',benefit:'Remove overnight buildup, prep skin for actives'},
+  {type:'Toner / Essence',benefit:'Balance pH and add first layer of hydration'},
+  {type:'Serum / Vitamin C',benefit:'Antioxidant protection and targeted treatment'},
+  {type:'Eye Cream',benefit:'Gentle care for delicate eye area'},
+  {type:'Moisturiser',benefit:'Seal in hydration and strengthen barrier'},
+  {type:'SPF (never skip!)',benefit:'Essential UV protection — the #1 anti-ageing step'},
+];
+const PM_STEPS=[
+  {type:'Oil Cleanser / Balm',benefit:'Dissolve SPF, makeup, and pollutants'},
+  {type:'Water Cleanser',benefit:'Deep cleanse without stripping skin'},
+  {type:'Toner / Essence',benefit:'Prep skin for maximum absorption'},
+  {type:'Active Serum',benefit:'Retinol, acids, or brighteners work best overnight'},
+  {type:'Moisturiser',benefit:'Rich repair while you sleep'},
+  {type:'Face Oil / Occlusive',benefit:'Lock in everything and boost barrier recovery'},
+];
+
+function renderSummaryTab(){
+  const container=document.getElementById('summary-content');
+  if(!container) return;
+  const wl=getWishlist();
+  const r=getRoutine();
+  const amP=r.am.map(id=>wl.find(p=>p.id===id)).filter(Boolean);
+  const pmP=r.pm.map(id=>wl.find(p=>p.id===id)).filter(Boolean);
+
+  if(!detectedSkinType){
+    container.innerHTML=`<div class="no-skin-type-msg"><div class="ns-icon">🌸</div><h3>Take the Skin Type Quiz First</h3><p>Get a personalised routine summary — ingredient tips, daily steps, and clash warnings — all tailored to your skin.</p><button class="btn-primary" style="padding:13px 32px" onclick="startQuiz()">Take Quiz →</button></div>`;
+    return;
+  }
+  const st=SKIN_RESULTS[detectedSkinType];
+  const makeSteps=(products,steps,slotLabel)=>{
+    if(products.length===0) return `<div style="text-align:center;padding:18px;color:var(--text3);font-size:.87rem;border:1px dashed var(--border);border-radius:10px">No products in your ${slotLabel} routine yet.<br><a style="color:var(--cyan);cursor:pointer;text-decoration:underline" onclick="switchTab('routine')">Add products in Routine Builder →</a></div>`;
+    return products.map((p,i)=>{
+      const s=steps[i]||{type:'Step '+(i+1),benefit:''};
+      return `<div class="routine-step"><div class="step-num filled">${i+1}</div><div class="step-content"><div class="step-type">${s.type}</div><div class="step-product">${p.name}</div>${s.benefit?`<div class="step-benefit">${s.benefit}</div>`:''}</div></div>`;
+    }).join('');
+  };
+  const topIngs=INGREDIENTS.filter(i=>i.goodFor.includes(detectedSkinType)&&i.flag==='green').slice(0,5);
+  const warnIngs=INGREDIENTS.filter(i=>i.flag==='red').slice(0,4);
+
+  container.innerHTML=`
+    <div class="summary-skin-header">
+      <span class="ssh-emoji">${st.emoji}</span>
+      <div class="ssh-info">
+        <h3>${st.name}</h3>
+        <p>${st.description.substring(0,150)}…</p>
+        <a class="ssh-change" onclick="startQuiz()">Retake quiz ↺</a>
+      </div>
+    </div>
+    <div class="routine-summary-card">
+      <div class="rsc-header"><span class="rsc-icon">🌅</span><div><div class="rsc-title">Morning Routine</div><div class="rsc-sub">AM · Protection &amp; glow</div></div></div>
+      ${makeSteps(amP,AM_STEPS,'AM')}
+    </div>
+    <div class="routine-summary-card">
+      <div class="rsc-header"><span class="rsc-icon">🌙</span><div><div class="rsc-title">Evening Routine</div><div class="rsc-sub">PM · Repair &amp; treat</div></div></div>
+      ${makeSteps(pmP,PM_STEPS,'PM')}
+    </div>
+    <div class="sum-recs">
+      <h4>✦ Top Ingredients for ${st.name}</h4>
+      ${topIngs.map(i=>`<div class="sum-rec-item"><span class="sum-rec-icon">${i.flagLabel.split(' ')[0]}</span><div><div class="sum-rec-name">${i.name}</div><div class="sum-rec-why">${i.what.substring(0,95)}…</div></div></div>`).join('')}
+    </div>
+    <div class="sum-recs">
+      <h4 class="avoid-hd">✕ Ingredients to Avoid</h4>
+      ${warnIngs.map(i=>`<div class="sum-rec-item"><span class="sum-rec-icon">⚠️</span><div><div class="sum-rec-name">${i.name}</div><div class="sum-rec-why">${i.what.substring(0,95)}…</div></div></div>`).join('')}
+    </div>
+    <div class="sum-tips">
+      <h4>✦ Smart Tips for ${st.name}</h4>
+      ${st.tips.map(t=>`<div class="sum-tip">${t}</div>`).join('')}
+    </div>`;
+}
+
+/* ════════════════════════════════════════
    DASHBOARD RENDER
 ════════════════════════════════════════ */
 function switchTab(tab){
   document.querySelectorAll('.dash-tab').forEach((t,i)=>{
-    t.classList.toggle('active',['wishlist','routine'][i]===tab);
+    t.classList.toggle('active',['wishlist','routine','summary'][i]===tab);
   });
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   if(tab==='routine') renderRoutine();
+  if(tab==='summary') renderSummaryTab();
 }
 function renderDashboard(){
   if(!currentUser){showPhase('phase-landing');openAuth('login');return;}
-  document.getElementById('dashboard-greeting').textContent=`Welcome back, ${currentUser.name.split(' ')[0]}! Here's your skin library.`;
+  const st = detectedSkinType ? ` · ${SKIN_RESULTS[detectedSkinType].emoji} ${SKIN_RESULTS[detectedSkinType].name}` : '';
+  document.getElementById('dashboard-greeting').textContent=`Welcome back, ${currentUser.name.split(' ')[0]}!${st}`;
   renderWishlist();
 }
 function renderWishlist(){
   const wl=getWishlist();
   const container=document.getElementById('wishlist-content');
   if(wl.length===0){
-    container.innerHTML=`<div class="wl-empty"><div class="wl-icon">💾</div><h3>Your wishlist is empty</h3><p>Analyze a product and hit "Save to Wishlist" to keep track of what you're testing.</p><button class="btn-primary" style="margin-top:20px" onclick="showPhase('phase-analyzer')">Go to Analyzer →</button></div>`;
+    container.innerHTML=`<div class="wl-empty"><div class="wl-icon">🧴</div><h3>Your skin basket is empty</h3><p>Analyze a product and hit "Save to Basket" to keep track of what you're testing.</p><button class="btn-primary" style="margin-top:20px" onclick="showPhase('phase-analyzer')">Go to Analyzer →</button></div>`;
     return;
   }
   container.innerHTML=`<div class="wl-grid">${wl.map(p=>{
     const d=new Date(p.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const score=getSkinMatchScore(p);
+    const matchStat=detectedSkinType?`<span class="wl-stat ${score>=70?'green':score<40?'red':''}">${score>=70?'✓ Great Match':score>=40?'~ Okay for you':'✕ Check Flags'}</span>`:'';
     const redStat=p.redFlags>0?`<span class="wl-stat red">🚩 ${p.redFlags} flag${p.redFlags>1?'s':''}</span>`:'<span class="wl-stat green">✅ Clean</span>';
     return `<div class="wl-card">
       <div class="wl-card-top"><span class="wl-card-name">${p.name}</span><span class="wl-card-date">${d}</span></div>
       <div class="wl-card-stats">
         <span class="wl-stat">${p.ingredientCount} ingredients</span>
-        ${redStat}
+        ${redStat}${matchStat}
         <span class="wl-stat">💧 ${p.scores.hydrating}%</span>
       </div>
       <div class="wl-card-actions">

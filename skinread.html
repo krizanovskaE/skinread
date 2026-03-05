@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkinRead — Know What You Put On Your Skin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0C0C0C;--bg2:#141414;--card:#1A1A1A;--card2:#222;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --pink:#FF006E;--pink-dim:rgba(255,0,110,0.1);
+      --cyan:#00F5A0;--cyan-dim:rgba(0,245,160,0.08);
+      --yellow:#FFE500;--text:#FFF;--text2:rgba(255,255,255,0.5);
+      --text3:rgba(255,255,255,0.2);--rad:16px;--rad-sm:10px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg2)}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(12,12,12,0.92);backdrop-filter:blur(14px);z-index:100}
+    .logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.5px}
+    .logo span{color:var(--pink)}
+    .nav-badge{background:var(--pink-dim);border:1px solid rgba(255,0,110,0.3);color:var(--pink);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase}
+
+    /* HERO */
+    .hero{padding:100px 40px 60px;max-width:900px;margin:0 auto;text-align:center}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border2);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:30px;letter-spacing:0.5px}
+    .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero h1{font-size:clamp(48px,8vw,88px);font-weight:800;letter-spacing:-3px;line-height:1;margin-bottom:24px}
+    .hero h1 .grad{background:linear-gradient(135deg,var(--pink) 0%,#FF6B9D 50%,var(--yellow) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:18px;color:var(--text2);max-width:560px;margin:0 auto 40px;line-height:1.7}
+    .hero-stats{display:flex;align-items:center;justify-content:center;gap:32px;margin-top:10px}
+    .hero-stat{text-align:center}
+    .hero-stat strong{display:block;font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:var(--cyan)}
+    .hero-stat span{font-size:12px;color:var(--text2);letter-spacing:0.5px;text-transform:uppercase}
+    .hero-divider{width:1px;height:40px;background:var(--border2)}
+
+    /* INPUT SECTION */
+    .input-section{max-width:800px;margin:0 auto;padding:0 40px 80px}
+    .input-card{background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:32px;position:relative;overflow:hidden}
+    .input-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--yellow),var(--cyan),transparent)}
+    .input-label{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+    .input-sublabel{font-size:13px;color:var(--text2);margin-bottom:20px}
+    textarea{width:100%;min-height:160px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rad-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.7;padding:16px;resize:vertical;transition:border-color .2s}
+    textarea::placeholder{color:var(--text3)}
+    textarea:focus{outline:none;border-color:rgba(255,0,110,0.4)}
+    .input-actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+    .btn-analyze{background:var(--pink);color:#fff;border:none;padding:14px 32px;border-radius:var(--rad-sm);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;letter-spacing:0.3px}
+    .btn-analyze:hover{background:#e0005f;transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,0,110,0.35)}
+    .btn-analyze:active{transform:translateY(0)}
+    .btn-example{background:transparent;color:var(--text2);border:1px solid var(--border2);padding:14px 20px;border-radius:var(--rad-sm);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;transition:all .2s}
+    .btn-example:hover{border-color:var(--border2);color:var(--text);background:var(--card2)}
+    .btn-clear{background:transparent;color:var(--text3);border:1px solid var(--border);padding:14px 16px;border-radius:var(--rad-sm);font-size:13px;cursor:pointer;transition:all .2s;margin-left:auto}
+    .btn-clear:hover{color:var(--text2);border-color:var(--border2)}
+
+    /* HOW IT WORKS */
+    .features{max-width:800px;margin:0 auto 80px;padding:0 40px}
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:24px;text-align:center}
+    .feature-icon{font-size:28px;margin-bottom:12px;display:block}
+    .feature-card h4{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--text)}
+    .feature-card p{font-size:13px;color:var(--text2);line-height:1.5}
+
+    /* RESULTS */
+    #results{display:none;max-width:900px;margin:0 auto;padding:0 40px 100px}
+    #results.visible{display:block;animation:fadeUp .5s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+    .results-title{font-size:28px;font-weight:800;letter-spacing:-0.5px}
+    .results-meta{font-size:13px;color:var(--text2);padding:6px 14px;background:var(--card);border:1px solid var(--border);border-radius:20px}
+    .section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+
+    /* SUMMARY CARD */
+    .summary-card{background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+    .summary-card::after{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,0,110,0.07),transparent 70%);pointer-events:none}
+    .summary-top{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+    .profile-section h3,.compat-section h3{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text)}
+    .score-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .score-label{font-size:12px;color:var(--text2);width:100px;flex-shrink:0}
+    .score-bar-bg{flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+    .score-bar{height:100%;border-radius:3px;transition:width 1s cubic-bezier(0.22,1,0.36,1)}
+    .score-val{font-size:12px;font-weight:700;width:30px;text-align:right;color:var(--text2)}
+
+    /* SKIN TYPE COMPAT */
+    .compat-grid{display:flex;flex-wrap:wrap;gap:8px}
+    .compat-badge{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;border-radius:var(--rad-sm);border:1px solid;font-size:11px;font-weight:600;letter-spacing:0.3px;min-width:70px}
+    .compat-badge .compat-icon{font-size:18px}
+    .compat-great{background:rgba(0,245,160,0.08);border-color:rgba(0,245,160,0.25);color:var(--cyan)}
+    .compat-okay{background:rgba(255,229,0,0.07);border-color:rgba(255,229,0,0.25);color:var(--yellow)}
+    .compat-caution{background:rgba(255,0,110,0.08);border-color:rgba(255,0,110,0.25);color:var(--pink)}
+
+    /* RED FLAGS */
+    .redflags-section{border-top:1px solid var(--border);padding-top:20px;margin-top:4px}
+    .redflag-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(255,0,110,0.06);border:1px solid rgba(255,0,110,0.15);border-radius:var(--rad-sm);margin-bottom:8px;font-size:13px}
+    .redflag-item.warning{background:rgba(255,0,110,0.08);border-color:rgba(255,0,110,0.25)}
+    .redflag-item.caution{background:rgba(255,229,0,0.06);border-color:rgba(255,229,0,0.2)}
+    .redflag-name{font-weight:700;color:var(--text);margin-bottom:2px;font-size:13px}
+    .redflag-msg{color:var(--text2);font-size:12px;line-height:1.5}
+    .flag-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+    /* INGREDIENT GRID */
+    .ingredients-section{margin-top:32px}
+    .ingredients-section h2{font-size:20px;font-weight:800;letter-spacing:-0.3px;margin-bottom:20px}
+    .ing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+    .ing-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rad);padding:20px;transition:border-color .2s,transform .15s}
+    .ing-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+    .ing-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+    .ing-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;line-height:1.3;flex:1}
+    .ing-icon{font-size:20px;flex-shrink:0}
+    .category-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:10px;border:1px solid}
+    .ing-function{font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:12px}
+    .ing-goodfor{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+    .goodfor-tag{font-size:10px;font-weight:600;letter-spacing:0.3px;padding:2px 8px;border-radius:10px;background:rgba(0,245,160,0.08);border:1px solid rgba(0,245,160,0.18);color:var(--cyan)}
+    .ing-redflag{background:rgba(255,0,110,0.07);border:1px solid rgba(255,0,110,0.2);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:rgba(255,100,130,0.9);line-height:1.45}
+    .ing-redflag.caution{background:rgba(255,229,0,0.06);border-color:rgba(255,229,0,0.2);color:rgba(255,229,80,0.85)}
+    .ing-original{font-size:10px;color:var(--text3);margin-top:8px;font-style:italic}
+
+    /* UNKNOWN */
+    .unknown-section{margin-top:24px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--rad)}
+    .unknown-section h4{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text2)}
+    .unknown-pills{display:flex;flex-wrap:wrap;gap:6px}
+    .unknown-pill{font-size:11px;padding:4px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text3)}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:40px;text-align:center;color:var(--text3);font-size:13px}
+    footer strong{color:var(--text2)}
+    .footer-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;margin-bottom:10px}
+    .footer-logo span{color:var(--pink)}
+
+    /* LOADING */
+    .loading{display:none;text-align:center;padding:60px 0}
+    .loading.active{display:block}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading p{color:var(--text2);font-size:14px}
+
+    @media(max-width:768px){
+      nav{padding:16px 20px}
+      .hero{padding:60px 20px 40px}
+      .hero h1{font-size:48px;letter-spacing:-2px}
+      .input-section,.features,.features-grid,#results{padding-left:20px;padding-right:20px}
+      .summary-top{grid-template-columns:1fr}
+      .features-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Skin<span>Read</span></div>
+  <div class="nav-badge">✦ Free Analyzer</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow"><span class="dot"></span> Skincare Ingredient Intelligence</div>
+  <h1>Know what you<br>put on your <span class="grad">skin.</span></h1>
+  <p>Paste any product's ingredient list and instantly understand what each ingredient does, who it's for, and what to watch out for.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><strong>65+</strong><span>Ingredients in DB</span></div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat"><strong>5</strong><span>Skin Types Covered</span></div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat"><strong>100%</strong><span>Private & Free</span></div>
+  </div>
+</section>
+
+<section class="input-section">
+  <div class="input-card">
+    <div class="input-label">Paste Your Ingredient List</div>
+    <div class="input-sublabel">Copy from any product label or website — INCI format works perfectly</div>
+    <textarea id="ingredientInput" placeholder="e.g. Water, Glycerin, Niacinamide, Sodium Hyaluronate, Cetearyl Alcohol, Dimethicone, Phenoxyethanol..."></textarea>
+    <div class="input-actions">
+      <button class="btn-analyze" onclick="runAnalysis()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        Analyze Ingredients
+      </button>
+      <button class="btn-example" onclick="loadExample()">✦ Try an Example</button>
+      <button class="btn-clear" onclick="clearInput()">Clear</button>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🔍</span>
+      <h4>Ingredient Breakdown</h4>
+      <p>Each ingredient explained: category, function, and who it benefits most</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🧬</span>
+      <h4>Product Profile</h4>
+      <p>Hydration, anti-aging, brightening, and acne-fighting scores at a glance</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚠️</span>
+      <h4>Red Flag Detection</h4>
+      <p>Flags potential irritants, comedogenic ingredients, and concerning chemicals</p>
+    </div>
+  </div>
+</section>
+
+<div class="loading" id="loadingSpinner">
+  <div class="spinner"></div>
+  <p>Analyzing ingredients…</p>
+</div>
+
+<section id="results"></section>
+
+<footer>
+  <div class="footer-logo">Skin<span>Read</span></div>
+  <p>For informational purposes only. Always patch test new products.<br>Formulation percentages affect efficacy and safety — consult a dermatologist for personalized advice.</p>
+</footer>
+
+<script>
+// ============================================================
+// INGREDIENT DATABASE
+// ============================================================
+const INGREDIENT_DB = [
+  // HUMECTANTS
+  {names:['water','aqua','eau'],displayName:'Water (Aqua)',category:'Solvent',categoryColor:'#607D8B',icon:'💧',function:'The universal base for most skincare formulations. Hydrates on the surface and helps dissolve other ingredients.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:[]},
+  {names:['glycerin','glycerol'],displayName:'Glycerin',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'A superstar humectant that draws moisture from the environment into the skin. Gentle, effective, and found in nearly every hydrating formula.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating']},
+  {names:['hyaluronic acid'],displayName:'Hyaluronic Acid',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'Can hold up to 1000x its weight in water, deeply plumping and hydrating the skin while reducing the appearance of fine lines.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating','anti-aging']},
+  {names:['sodium hyaluronate'],displayName:'Sodium Hyaluronate',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'The salt form of Hyaluronic Acid with a smaller molecular size — penetrates deeper for even more intense hydration.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating','anti-aging']},
+  {names:['panthenol','provitamin b5','d-panthenol','dl-panthenol'],displayName:'Panthenol (Pro-Vitamin B5)',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'Attracts and locks in moisture, soothes irritation, and supports skin barrier repair. A gentle multitasker.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating','soothing']},
+  {names:['propylene glycol'],displayName:'Propylene Glycol',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'A humectant and penetration enhancer that helps active ingredients absorb more effectively.',goodFor:['dry','combination','mature'],redFlag:{level:'caution',message:'Can cause irritation or contact dermatitis in some sensitive individuals at higher concentrations.'},tags:['hydrating']},
+  {names:['butylene glycol'],displayName:'Butylene Glycol',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'A gentle humectant and solvent. Similar to glycerin but lighter, and also helps preserve formulas.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating']},
+  {names:['aloe vera','aloe barbadensis','aloe barbadensis leaf juice','aloe barbadensis leaf extract','aloe barbadensis gel'],displayName:'Aloe Vera',category:'Humectant',categoryColor:'#29B6F6',icon:'🌿',function:'A lightweight natural humectant that calms redness, soothes sunburn, and provides hydration without heaviness.',goodFor:['oily','sensitive','dry','combination'],redFlag:null,tags:['hydrating','soothing']},
+  {names:['sorbitol'],displayName:'Sorbitol',category:'Humectant',categoryColor:'#29B6F6',icon:'💧',function:'A sugar-derived humectant that helps skin retain moisture and improves texture of formulas.',goodFor:['dry','combination','mature'],redFlag:null,tags:['hydrating']},
+
+  // EMOLLIENTS / OCCLUSIVES
+  {names:['squalane'],displayName:'Squalane',category:'Emollient',categoryColor:'#FFA726',icon:'✨',function:'A lightweight, stable oil that mirrors the skin\'s own sebum. Nourishes deeply without clogging pores — suitable for all skin types.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating','anti-aging']},
+  {names:['dimethicone','cyclomethicone','cyclopentasiloxane','cyclohexasiloxane','polydimethylsiloxane'],displayName:'Dimethicone (Silicone)',category:'Emollient',categoryColor:'#FFA726',icon:'🔬',function:'Creates a smooth, protective barrier that locks in moisture. Gives products their silky feel and blurs fine lines.',goodFor:['dry','sensitive','combination','mature'],redFlag:{level:'caution',message:'Can feel occlusive for oily skin. May trap debris in pores for acne-prone skin — patch test recommended.'},tags:['hydrating']},
+  {names:['petrolatum','petroleum jelly'],displayName:'Petrolatum',category:'Occlusive',categoryColor:'#FF7043',icon:'🛡️',function:'One of the most effective occlusives. Creates an impermeable barrier to lock in moisture — excellent for very dry or cracked skin.',goodFor:['dry','sensitive','mature'],redFlag:{level:'caution',message:'Can feel heavy and greasy. Not ideal for oily or acne-prone skin — best used as an overnight treatment.'},tags:['hydrating']},
+  {names:['shea butter','butyrospermum parkii','butyrospermum parkii butter','butyrospermum parkii (shea) butter','butyrospermum parkii shea butter'],displayName:'Shea Butter',category:'Emollient',categoryColor:'#FFA726',icon:'🧈',function:'Rich in fatty acids and vitamins A & E. Deeply nourishes, softens skin, and has mild anti-inflammatory properties.',goodFor:['dry','sensitive','mature'],redFlag:{level:'caution',message:'Moderately comedogenic (rating 0-2). May cause breakouts for very acne-prone individuals.'},tags:['hydrating','soothing']},
+  {names:['cetearyl alcohol','cetyl alcohol','stearyl alcohol'],displayName:'Cetearyl Alcohol',category:'Emollient',categoryColor:'#FFA726',icon:'🧴',function:'A fatty alcohol (NOT a drying alcohol) that acts as emollient, emulsifier, and thickener. Softens skin and gives creams their smooth texture.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating']},
+  {names:['jojoba oil','simmondsia chinensis seed oil','simmondsia chinensis (jojoba) seed oil'],displayName:'Jojoba Oil',category:'Emollient',categoryColor:'#FFA726',icon:'🌾',function:'Technically a wax ester that closely mimics sebum. Balances oil production and softens skin without clogging pores.',goodFor:['oily','combination','dry','sensitive','mature'],redFlag:null,tags:['hydrating']},
+  {names:['argan oil','argania spinosa kernel oil'],displayName:'Argan Oil',category:'Emollient',categoryColor:'#FFA726',icon:'🫒',function:'Rich in Vitamin E and essential fatty acids. Absorbs quickly, nourishes, and adds a healthy glow without greasiness.',goodFor:['dry','combination','mature','oily'],redFlag:null,tags:['hydrating','anti-aging']},
+  {names:['rosehip oil','rosa canina fruit oil','rosa rubiginosa seed oil'],displayName:'Rosehip Oil',category:'Emollient',categoryColor:'#FFA726',icon:'🌹',function:'Rich in essential fatty acids and natural Vitamin A precursors. Helps fade hyperpigmentation, improve texture, and boost elasticity.',goodFor:['mature','dry','combination'],redFlag:{level:'caution',message:'High in linoleic acid which can oxidize. May cause breakouts in some acne-prone individuals.'},tags:['hydrating','anti-aging','brightening']},
+  {names:['coconut oil','cocos nucifera oil','cocos nucifera (coconut) oil'],displayName:'Coconut Oil',category:'Emollient',categoryColor:'#FFA726',icon:'🥥',function:'Rich in lauric acid with antimicrobial properties. Deeply moisturizing and nourishing.',goodFor:['dry','mature'],redFlag:{level:'warning',message:'Highly comedogenic (rating 4/5). Very likely to clog pores — strongly avoid for oily or acne-prone skin.'},tags:['hydrating']},
+  {names:['mineral oil','paraffinum liquidum'],displayName:'Mineral Oil',category:'Occlusive',categoryColor:'#FF7043',icon:'🛡️',function:'A highly refined petroleum-derived oil that forms an occlusive barrier, locking in moisture effectively.',goodFor:['dry','sensitive','mature'],redFlag:{level:'caution',message:'Can be comedogenic for some people. The "mineral oil is bad" myth is largely debunked for cosmetic-grade mineral oil, but it\'s not ideal for oily skin.'},tags:['hydrating']},
+  {names:['isopropyl myristate','isopropyl isostearate','isopropyl palmitate'],displayName:'Isopropyl Myristate',category:'Emollient',categoryColor:'#FFA726',icon:'⚠️',function:'A lightweight emollient used to reduce greasy feel in formulas. Helps active ingredients penetrate the skin.',goodFor:['dry'],redFlag:{level:'warning',message:'Highly comedogenic — a well-known pore-clogger. Avoid for acne-prone or oily skin.'},tags:['hydrating']},
+
+  // ACTIVES - VITAMIN C
+  {names:['ascorbic acid','l-ascorbic acid'],displayName:'Ascorbic Acid (Vitamin C)',category:'Active',categoryColor:'#EC407A',icon:'🍊',function:'The most potent form of Vitamin C. Brightens skin, fades pigmentation, boosts collagen production, and neutralizes free radicals.',goodFor:['mature','combination','oily','dry'],redFlag:{level:'caution',message:'Unstable — oxidizes when exposed to air/light. Can be irritating at higher concentrations for sensitive skin. May sting on application.'},tags:['brightening','anti-aging','antioxidant']},
+  {names:['sodium ascorbyl phosphate','ascorbyl glucoside','tetrahexyldecyl ascorbate','magnesium ascorbyl phosphate','ascorbyl tetraisopalmitate'],displayName:'Vitamin C Derivative',category:'Active',categoryColor:'#EC407A',icon:'🍊',function:'A more stable, gentler form of Vitamin C. Less potent but more suitable for sensitive skin — brightens and protects against oxidative damage.',goodFor:['sensitive','mature','combination','oily','dry'],redFlag:null,tags:['brightening','anti-aging','antioxidant']},
+
+  // ACTIVES - RETINOIDS
+  {names:['retinol'],displayName:'Retinol',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'The gold standard anti-aging ingredient. Accelerates cell turnover, stimulates collagen, fades dark spots, and reduces fine lines.',goodFor:['mature','combination','oily'],redFlag:{level:'caution',message:'Can cause dryness, peeling, and irritation — start with low concentration 2x/week. Not for sensitive or pregnant skin. Always use SPF during the day.'},tags:['anti-aging','acne-fighting']},
+  {names:['retinyl palmitate','retinyl acetate'],displayName:'Retinyl Palmitate',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'A milder, more stable retinol ester. Gentler on sensitive skin while still offering anti-aging benefits.',goodFor:['mature','sensitive','combination'],redFlag:null,tags:['anti-aging']},
+  {names:['retinal','retinaldehyde'],displayName:'Retinal (Retinaldehyde)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'One step closer to retinoic acid than retinol — about 11x more potent. Powerful anti-aging with faster results.',goodFor:['mature','combination','oily'],redFlag:{level:'caution',message:'More potent than retinol — introduce slowly. Not for sensitive or pregnant skin. Use SPF daily.'},tags:['anti-aging','acne-fighting']},
+  {names:['bakuchiol'],displayName:'Bakuchiol',category:'Active',categoryColor:'#EC407A',icon:'🌿',function:'A plant-based retinol alternative from babchi plant. Stimulates collagen, reduces wrinkles, and brightens without irritation. Safe during pregnancy.',goodFor:['sensitive','mature','combination','dry'],redFlag:null,tags:['anti-aging','brightening']},
+
+  // ACTIVES - ACIDS
+  {names:['niacinamide','nicotinamide','vitamin b3'],displayName:'Niacinamide (Vitamin B3)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'A multitasking powerhouse: minimizes pores, controls oil, fades dark spots, strengthens the skin barrier, and reduces redness. Great for almost everyone.',goodFor:['oily','combination','sensitive','mature','dry'],redFlag:null,tags:['brightening','anti-aging','acne-fighting','soothing']},
+  {names:['glycolic acid'],displayName:'Glycolic Acid (AHA)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'The smallest AHA — penetrates deepest to exfoliate dead skin, improve texture, fade dark spots, and stimulate collagen.',goodFor:['oily','combination','mature','dry'],redFlag:{level:'caution',message:'Increases sun sensitivity — always wear SPF. Can irritate sensitive skin. Don\'t layer with other strong actives.'},tags:['anti-aging','brightening','exfoliating']},
+  {names:['lactic acid'],displayName:'Lactic Acid (AHA)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'A gentle AHA that exfoliates and hydrates simultaneously. Improves texture, brightens skin tone, and is more tolerable than glycolic acid.',goodFor:['dry','combination','mature','sensitive'],redFlag:{level:'caution',message:'Increases sun sensitivity. Use SPF. May irritate very sensitive skin at higher concentrations.'},tags:['anti-aging','brightening','exfoliating','hydrating']},
+  {names:['mandelic acid'],displayName:'Mandelic Acid (AHA)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'A larger-molecule AHA from almonds — gentler and more suitable for sensitive skin. Exfoliates, brightens, and has mild antibacterial properties.',goodFor:['sensitive','oily','combination','mature'],redFlag:null,tags:['brightening','exfoliating','acne-fighting']},
+  {names:['salicylic acid','betaine salicylate'],displayName:'Salicylic Acid (BHA)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'The go-to BHA for acne. Oil-soluble, so it dives deep into pores to clear blackheads, whiteheads, and reduce inflammation.',goodFor:['oily','combination'],redFlag:{level:'caution',message:'Can be drying. Not ideal for dry or sensitive skin. Increases sun sensitivity. Avoid during pregnancy at high concentrations.'},tags:['acne-fighting','exfoliating']},
+  {names:['azelaic acid'],displayName:'Azelaic Acid',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'Targets acne, rosacea, and hyperpigmentation simultaneously. Anti-inflammatory and antibacterial — one of the most well-tolerated actives.',goodFor:['sensitive','oily','combination','mature'],redFlag:null,tags:['brightening','acne-fighting','soothing']},
+  {names:['benzoyl peroxide'],displayName:'Benzoyl Peroxide',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'Kills acne-causing bacteria (C. acnes) directly. One of the most effective treatments for inflammatory acne and whiteheads.',goodFor:['oily'],redFlag:{level:'warning',message:'Can bleach fabrics and hair. Very drying and irritating. Can damage the skin barrier if overused. Not for dry or sensitive skin.'},tags:['acne-fighting']},
+  {names:['alpha arbutin'],displayName:'Alpha Arbutin',category:'Active',categoryColor:'#EC407A',icon:'🌟',function:'Inhibits melanin production to fade dark spots, post-acne marks, and hyperpigmentation. Gentle and effective for all skin types.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['brightening']},
+  {names:['kojic acid','kojic dipalmitate'],displayName:'Kojic Acid',category:'Active',categoryColor:'#EC407A',icon:'🌟',function:'Derived from fungi — inhibits tyrosinase to fade dark spots and uneven skin tone. A proven brightening ingredient.',goodFor:['mature','combination','oily'],redFlag:{level:'caution',message:'Can cause irritation or contact dermatitis for sensitive skin types.'},tags:['brightening']},
+  {names:['tranexamic acid'],displayName:'Tranexamic Acid',category:'Active',categoryColor:'#EC407A',icon:'🌟',function:'Effectively fades stubborn pigmentation and melasma. Gentler than many other brightening actives — suitable for most skin types.',goodFor:['sensitive','mature','combination','oily','dry'],redFlag:null,tags:['brightening']},
+  {names:['gluconolactone','lactobionic acid'],displayName:'PHA (Polyhydroxy Acid)',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'The gentlest of all exfoliating acids. Works like AHAs but with larger molecules that don\'t penetrate as deeply — ideal for sensitive or reactive skin.',goodFor:['sensitive','dry','combination'],redFlag:null,tags:['exfoliating','hydrating']},
+
+  // PEPTIDES
+  {names:['palmitoyl pentapeptide-4','matrixyl','palmitoyl tripeptide-1','palmitoyl tetrapeptide-7','matrixyl 3000'],displayName:'Matrixyl (Peptide)',category:'Peptide',categoryColor:'#7986CB',icon:'🧬',function:'Signals the skin to produce more collagen and elastin. Reduces wrinkles, firms skin, and improves overall elasticity.',goodFor:['mature','dry','combination'],redFlag:null,tags:['anti-aging']},
+  {names:['acetyl hexapeptide-3','acetyl hexapeptide-8','argireline'],displayName:'Argireline (Peptide)',category:'Peptide',categoryColor:'#7986CB',icon:'🧬',function:'Relaxes facial muscle micro-contractions to reduce expression lines around the eyes and forehead. Often called "topical Botox."',goodFor:['mature','combination','dry'],redFlag:null,tags:['anti-aging']},
+  {names:['copper peptide','copper tripeptide-1','gh3'],displayName:'Copper Peptides',category:'Peptide',categoryColor:'#7986CB',icon:'🧬',function:'Promotes wound healing, boosts collagen and elastin, and has antioxidant properties. Supports skin remodeling and repair.',goodFor:['mature','combination','dry'],redFlag:{level:'caution',message:'Do not combine with Vitamin C or exfoliating acids — these can deactivate the copper peptides.'},tags:['anti-aging','soothing']},
+
+  // CERAMIDES
+  {names:['ceramide np','ceramide 3','ceramide ap','ceramide eop','ceramide ng','ceramide ns','ceramide as','ceramide eos','ceramide'],displayName:'Ceramides',category:'Ceramide',categoryColor:'#FFB300',icon:'🛡️',function:'Essential lipids that make up ~50% of the skin barrier. Replenish and reinforce the barrier to lock in moisture and protect from environmental aggressors.',goodFor:['dry','sensitive','mature','combination'],redFlag:null,tags:['hydrating','soothing']},
+  {names:['cholesterol'],displayName:'Cholesterol',category:'Ceramide',categoryColor:'#FFB300',icon:'🛡️',function:'A key lipid in the skin\'s natural moisturizing factor. Works alongside ceramides and fatty acids to repair and strengthen the skin barrier.',goodFor:['dry','sensitive','mature'],redFlag:null,tags:['hydrating']},
+
+  // ANTIOXIDANTS
+  {names:['tocopherol','tocopheryl acetate','vitamin e'],displayName:'Vitamin E (Tocopherol)',category:'Antioxidant',categoryColor:'#66BB6A',icon:'🌿',function:'A potent antioxidant that neutralizes free radicals, protects from UV damage, and synergizes powerfully with Vitamin C.',goodFor:['dry','sensitive','mature','combination'],redFlag:{level:'caution',message:'Pure Vitamin E oil can be comedogenic at high concentrations. In formulas at normal levels, it\'s generally safe for all skin types.'},tags:['antioxidant','hydrating','anti-aging']},
+  {names:['ferulic acid'],displayName:'Ferulic Acid',category:'Antioxidant',categoryColor:'#66BB6A',icon:'🌿',function:'A plant-based antioxidant that stabilizes and doubles the effectiveness of Vitamins C & E. Protects against UV-induced damage.',goodFor:['mature','combination','dry','sensitive'],redFlag:null,tags:['antioxidant','anti-aging','brightening']},
+  {names:['resveratrol'],displayName:'Resveratrol',category:'Antioxidant',categoryColor:'#66BB6A',icon:'🍇',function:'A plant polyphenol that combats free radical damage, reduces inflammation, and helps preserve collagen.',goodFor:['mature','sensitive','combination','dry'],redFlag:null,tags:['antioxidant','anti-aging','soothing']},
+  {names:['camellia sinensis leaf extract','green tea extract','green tea','epigallocatechin gallate','egcg'],displayName:'Green Tea Extract',category:'Antioxidant',categoryColor:'#66BB6A',icon:'🍵',function:'Rich in EGCG polyphenols. Powerful antioxidant, anti-inflammatory, and helps reduce UV-induced damage and control sebum production.',goodFor:['oily','sensitive','mature','combination'],redFlag:null,tags:['antioxidant','anti-aging','soothing','acne-fighting']},
+  {names:['coenzyme q10','ubiquinone','ubiquinol'],displayName:'Coenzyme Q10 (CoQ10)',category:'Antioxidant',categoryColor:'#66BB6A',icon:'⚡',function:'Naturally present in skin cells — energizes cells and provides antioxidant protection. Levels decline with age, making it key for mature skin.',goodFor:['mature','combination','dry'],redFlag:null,tags:['antioxidant','anti-aging']},
+  {names:['niacinamide','vitamin b3'],displayName:'Niacinamide',category:'Antioxidant',categoryColor:'#66BB6A',icon:'⚗️',function:'Multifunction active with antioxidant properties.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['brightening','acne-fighting']},
+
+  // SOOTHING / BARRIER
+  {names:['allantoin'],displayName:'Allantoin',category:'Soothing',categoryColor:'#26A69A',icon:'🌸',function:'Soothes irritation, promotes cell regeneration, and softens skin. A calming ingredient perfect for sensitive, reactive, or post-procedure skin.',goodFor:['sensitive','dry','combination','oily','mature'],redFlag:null,tags:['soothing','hydrating']},
+  {names:['centella asiatica','centella asiatica extract','gotu kola','cica','asiaticoside','madecassoside','asiatic acid','madecassic acid'],displayName:'Centella Asiatica (Cica)',category:'Soothing',categoryColor:'#26A69A',icon:'🌿',function:'A powerhouse herb for sensitive and stressed skin. Calms redness, strengthens the skin barrier, promotes healing, and provides anti-aging benefits.',goodFor:['sensitive','dry','combination','mature'],redFlag:null,tags:['soothing','anti-aging']},
+  {names:['bisabolol','alpha-bisabolol'],displayName:'Bisabolol',category:'Soothing',categoryColor:'#26A69A',icon:'🌸',function:'Derived from chamomile. Calms skin irritation, reduces redness, speeds up healing, and has gentle anti-inflammatory properties.',goodFor:['sensitive','dry','combination'],redFlag:null,tags:['soothing']},
+  {names:['avena sativa kernel extract','colloidal oatmeal','oat extract','avena sativa','oatmeal'],displayName:'Colloidal Oatmeal',category:'Soothing',categoryColor:'#26A69A',icon:'🌾',function:'An FDA-recognized skin protectant. Relieves itching, calms irritation, and supports the skin barrier. Excellent for eczema-prone skin.',goodFor:['sensitive','dry'],redFlag:null,tags:['soothing','hydrating']},
+  {names:['glycyrrhiza glabra root extract','licorice root extract','licorice extract','glycyrrhiza uralensis root extract'],displayName:'Licorice Root Extract',category:'Soothing',categoryColor:'#26A69A',icon:'🌿',function:'Contains glabridin, which inhibits melanin production. Brightens dark spots and has anti-inflammatory and soothing properties.',goodFor:['sensitive','combination','mature','oily'],redFlag:null,tags:['brightening','soothing']},
+  {names:['calendula extract','calendula officinalis flower extract'],displayName:'Calendula Extract',category:'Soothing',categoryColor:'#26A69A',icon:'🌼',function:'A gentle botanical extract with anti-inflammatory and wound-healing properties. Soothes sensitive, red, or irritated skin.',goodFor:['sensitive','dry'],redFlag:null,tags:['soothing']},
+  {names:['chamomile extract','matricaria extract','matricaria flower extract','chamomilla recutita'],displayName:'Chamomile Extract',category:'Soothing',categoryColor:'#26A69A',icon:'🌼',function:'Contains bisabolol and chamazulene. Calms irritated, reactive skin and reduces redness and puffiness.',goodFor:['sensitive','dry','combination'],redFlag:{level:'caution',message:'Can cause allergic reactions in people with ragweed allergy (cross-reactivity). Patch test if allergy-prone.'},tags:['soothing']},
+
+  // PRESERVATIVES
+  {names:['phenoxyethanol'],displayName:'Phenoxyethanol',category:'Preservative',categoryColor:'#8D6E63',icon:'🔬',function:'A widely used preservative that prevents microbial contamination. Considered a safer alternative to parabens.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:{level:'caution',message:'Can cause irritation at high concentrations (above 1%). Generally considered safe at standard cosmetic levels.'},tags:[]},
+  {names:['methylparaben','ethylparaben','propylparaben','butylparaben','isobutylparaben'],displayName:'Parabens',category:'Preservative',categoryColor:'#8D6E63',icon:'🔬',function:'Highly effective broad-spectrum preservatives that prevent bacteria and mold in cosmetics.',goodFor:[],redFlag:{level:'caution',message:'Classified as potential endocrine disruptors — butyl and propylparabens raise the most concern. Many brands have moved to paraben-free formulas as a precaution.'},tags:[]},
+  {names:['dmdm hydantoin','imidazolidinyl urea','diazolidinyl urea','quaternium-15','bronopol','2-bromo-2-nitropropane-1,3-diol'],displayName:'Formaldehyde Releaser',category:'Preservative',categoryColor:'#EF5350',icon:'⚠️',function:'Preservatives that slowly release formaldehyde to prevent microbial growth in cosmetics.',goodFor:[],redFlag:{level:'warning',message:'Releases formaldehyde — a known carcinogen and common allergen. Can cause contact dermatitis and sensitization. Widely considered best avoided.'},tags:[]},
+  {names:['ethylhexylglycerin'],displayName:'Ethylhexylglycerin',category:'Preservative',categoryColor:'#8D6E63',icon:'🔬',function:'A gentle preservative booster derived from glycerin. Often used alongside phenoxyethanol to reduce the required concentration of both.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:['hydrating']},
+
+  // FRAGRANCE / IRRITANTS
+  {names:['fragrance','parfum','perfume','aroma'],displayName:'Fragrance (Parfum)',category:'Fragrance',categoryColor:'#EF5350',icon:'⚠️',function:'Added to products to create a pleasant scent. Has no skincare benefit and is a catch-all term that can hide hundreds of undisclosed chemicals.',goodFor:[],redFlag:{level:'warning',message:'The #1 cause of contact dermatitis and skin sensitization. Can trigger redness, itching, and breakouts. Best avoided, especially for sensitive skin.'},tags:[]},
+  {names:['alcohol denat','alcohol denat.','denatured alcohol','sd alcohol','isopropyl alcohol','ethanol'],displayName:'Drying Alcohol',category:'Fragrance',categoryColor:'#EF5350',icon:'⚠️',function:'A solvent that creates a light, quick-dry feel and temporarily mattifies skin. Used in toners and some serums.',goodFor:['oily'],redFlag:{level:'warning',message:'Disrupts the skin barrier, causes dryness, and triggers inflammation with repeated use. Problematic for dry, sensitive, and combination skin types.'},tags:[]},
+  {names:['linalool','limonene','geraniol','citronellol','eugenol','cinnamal','benzyl benzoate','benzyl salicylate','alpha-isomethyl ionone','hydroxycitronellal','isoeugenol','cinnamyl alcohol','farnesol','coumarin'],displayName:'Fragrance Allergen',category:'Fragrance',categoryColor:'#EF5350',icon:'⚠️',function:'A specific fragrance chemical naturally occurring in essential oils or added as a scent component.',goodFor:[],redFlag:{level:'warning',message:'An EU-listed fragrance allergen. Can cause contact dermatitis and sensitization in susceptible individuals, especially those with sensitive or reactive skin.'},tags:[]},
+  {names:['lavender oil','lavandula angustifolia oil','lavandula angustifolia (lavender) oil','tea tree oil','melaleuca alternifolia leaf oil','peppermint oil','mentha piperita oil','eucalyptus oil','eucalyptus globulus leaf oil','rosemary extract','rosmarinus officinalis leaf oil','lemon oil','citrus limon peel oil'],displayName:'Essential Oil',category:'Fragrance',categoryColor:'#EF5350',icon:'⚠️',function:'Natural plant-derived oils with fragrant properties. Some have antimicrobial effects.',goodFor:[],redFlag:{level:'caution',message:'Among the most common causes of skin sensitization and contact dermatitis. Generally not recommended for sensitive or reactive skin types.'},tags:[]},
+
+  // SURFACTANTS
+  {names:['sodium lauryl sulfate','sls'],displayName:'Sodium Lauryl Sulfate (SLS)',category:'Surfactant',categoryColor:'#EF5350',icon:'⚠️',function:'A powerful cleansing surfactant that creates a rich lather and removes oil and dirt very effectively.',goodFor:['oily'],redFlag:{level:'warning',message:'Very harsh on the skin — strips the barrier, causes irritation, redness, and dryness. Associated with worsening eczema and acne. Widely considered too aggressive for facial use.'},tags:[]},
+  {names:['sodium laureth sulfate','sles'],displayName:'Sodium Laureth Sulfate (SLES)',category:'Surfactant',categoryColor:'#FF7043',icon:'🔬',function:'A milder sulfate surfactant used for cleansing in face washes, shampoos, and body washes.',goodFor:['oily'],redFlag:{level:'caution',message:'Can irritate dry or sensitive skin with frequent use. Milder than SLS but may still disrupt the skin barrier over time.'},tags:[]},
+  {names:['cocamidopropyl betaine'],displayName:'Cocamidopropyl Betaine',category:'Surfactant',categoryColor:'#78909C',icon:'🔬',function:'A coconut-derived mild surfactant and foaming agent often used as a gentler SLS alternative.',goodFor:['oily','combination'],redFlag:{level:'caution',message:'Can cause contact dermatitis in some sensitive individuals. Generally well-tolerated at normal concentrations.'},tags:[]},
+
+  // SUNSCREEN
+  {names:['zinc oxide'],displayName:'Zinc Oxide (Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A physical mineral UV filter that reflects both UVA and UVB rays. The gentlest sunscreen ingredient and also has soothing, anti-inflammatory properties.',goodFor:['sensitive','oily','combination','dry','mature'],redFlag:null,tags:['sunscreen','soothing','acne-fighting']},
+  {names:['titanium dioxide'],displayName:'Titanium Dioxide (Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A physical UV filter with broad-spectrum protection. Gentle on sensitive skin, though primarily protects against UVB over UVA.',goodFor:['sensitive','oily','combination','dry','mature'],redFlag:null,tags:['sunscreen']},
+  {names:['avobenzone','butyl methoxydibenzoylmethane'],displayName:'Avobenzone (Chemical Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A chemical UVA filter that absorbs UV radiation. Provides broad UVA coverage.',goodFor:['combination','oily','dry','mature'],redFlag:{level:'caution',message:'Unstable in sunlight — needs stabilizers to be effective. Can cause irritation or allergy in sensitive individuals.'},tags:['sunscreen']},
+  {names:['oxybenzone','benzophenone-3'],displayName:'Oxybenzone (Chemical Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A chemical UV filter that absorbs both UVA and UVB rays.',goodFor:[],redFlag:{level:'warning',message:'Potential endocrine disruptor — detected in blood after topical use. Linked to coral reef damage and banned in some regions. Consider mineral alternatives.'},tags:['sunscreen']},
+  {names:['octinoxate','octyl methoxycinnamate','ethylhexyl methoxycinnamate'],displayName:'Octinoxate (Chemical Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A widely used UVB chemical filter that provides reliable UVB protection.',goodFor:['combination','oily','dry'],redFlag:{level:'caution',message:'Potential endocrine disruptor and reef-harmful. Banned in Hawaii and some other regions. Studies show skin absorption.'},tags:['sunscreen']},
+  {names:['homosalate'],displayName:'Homosalate (Chemical Sunscreen)',category:'Sunscreen',categoryColor:'#FDD835',icon:'☀️',function:'A chemical UVB filter often used in combination with other sunscreen ingredients.',goodFor:['combination','oily'],redFlag:{level:'caution',message:'Recent studies suggest potential endocrine disruption at high concentrations. The FDA has requested more safety data.'},tags:['sunscreen']},
+
+  // MISC
+  {names:['citric acid'],displayName:'Citric Acid',category:'pH Adjuster',categoryColor:'#78909C',icon:'🍋',function:'Primarily used to adjust and stabilize the pH of formulas. At higher concentrations, can have mild exfoliating (AHA) effects.',goodFor:['combination','oily','mature'],redFlag:{level:'caution',message:'Mildly irritating for sensitive skin at higher concentrations. Usually used in small amounts for pH adjustment.'},tags:[]},
+  {names:['mica'],displayName:'Mica',category:'Cosmetic',categoryColor:'#90A4AE',icon:'✨',function:'A mineral used to add shimmer, luminosity, and a soft-focus effect to skincare and makeup products. No functional skincare benefit.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:[]},
+  {names:['talc'],displayName:'Talc',category:'Cosmetic',categoryColor:'#90A4AE',icon:'🔬',function:'A mineral powder used to absorb excess moisture and oil, and to improve the texture and slip of products.',goodFor:['oily','combination'],redFlag:{level:'caution',message:'Cosmetic talc must be asbestos-free. Historical contamination concerns exist — choose brands that verify asbestos-free testing.'},tags:[]},
+  {names:['xanthan gum','carbomer','hydroxyethylcellulose','cellulose','hydroxypropyl methylcellulose'],displayName:'Gelling Agent',category:'Texture',categoryColor:'#78909C',icon:'🧪',function:'Used to create the gel or cream texture of products. Helps stabilize formulations and create a pleasant, spreadable consistency.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:[]},
+  {names:['titanium dioxide (ci 77891)','iron oxides','ci 77491','ci 77492','ci 77499','ci 77891'],displayName:'Colorant / Pigment',category:'Cosmetic',categoryColor:'#90A4AE',icon:'🎨',function:'Mineral-derived pigments used to add color to tinted skincare products, BB creams, and foundations.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:[]},
+  {names:['disodium edta','tetrasodium edta','edta'],displayName:'EDTA (Chelating Agent)',category:'Preservative',categoryColor:'#8D6E63',icon:'🔬',function:'Binds to mineral ions in water, preventing them from interfering with other ingredients and helping preserve product stability.',goodFor:['oily','dry','sensitive','combination','mature'],redFlag:null,tags:[]},
+  {names:['stearic acid','palmitic acid','oleic acid','linoleic acid','linolenic acid'],displayName:'Fatty Acid',category:'Emollient',categoryColor:'#FFA726',icon:'🧈',function:'Natural fatty acids found in plant oils and in the skin\'s natural moisturizing factor. Soften, smooth, and help maintain the lipid barrier.',goodFor:['dry','combination','mature','sensitive'],redFlag:null,tags:['hydrating']},
+  {names:['zinc pca'],displayName:'Zinc PCA',category:'Active',categoryColor:'#EC407A',icon:'⚗️',function:'Combines zinc\'s sebum-regulating and antibacterial properties with PCA\'s (pyrrolidone carboxylic acid) moisturizing ability. Great for oily, acne-prone skin.',goodFor:['oily','combination'],redFlag:null,tags:['acne-fighting','hydrating']}
+];
+
+// Deduplicate DB by displayName (niacinamide appears twice — keep first full entry)
+const seenNames = new Set();
+const INGREDIENT_DB_CLEAN = INGREDIENT_DB.filter(ing => {
+  if(seenNames.has(ing.displayName)) return false;
+  seenNames.add(ing.displayName);
+  return true;
+});
+
+// ============================================================
+// ANALYZER
+// ============================================================
+const EXAMPLE = 'Water, Glycerin, Niacinamide, Sodium Hyaluronate, Cetearyl Alcohol, Dimethicone, Ceramide NP, Ceramide AP, Shea Butter, Panthenol, Tocopherol, Allantoin, Phenoxyethanol, Fragrance, Citric Acid, Ethylhexylglycerin';
+
+function loadExample() {
+  document.getElementById('ingredientInput').value = EXAMPLE;
+}
+function clearInput() {
+  document.getElementById('ingredientInput').value = '';
+  const r = document.getElementById('results');
+  r.classList.remove('visible');
+  r.style.display = 'none';
+}
+
+function parseIngredients(text) {
+  return text.split(/,|\n/)
+    .map(s => s.trim().replace(/\*/g,'').replace(/^\d+\.?\s*/,'').replace(/\s*\([^)]*\)/g,'').trim().toLowerCase())
+    .filter(s => s.length > 1);
+}
+
+function matchIngredient(raw) {
+  for(const ing of INGREDIENT_DB_CLEAN) {
+    for(const name of ing.names) {
+      if(raw === name || raw.includes(name) || name.includes(raw)) return ing;
+    }
+  }
+  return null;
+}
+
+function analyzeIngredients(text) {
+  const rawList = parseIngredients(text);
+  const found = [], unknown = [], seenDisplay = new Set();
+  for(const raw of rawList) {
+    const match = matchIngredient(raw);
+    if(match && !seenDisplay.has(match.displayName)) {
+      seenDisplay.add(match.displayName);
+      found.push({...match, originalName: raw});
+    } else if(!match) {
+      unknown.push(raw);
+    }
+  }
+  const allTags = found.flatMap(i => i.tags);
+  const count = t => allTags.filter(x=>x===t).length;
+  const scores = {
+    hydrating: Math.min(100, count('hydrating')*15 + (found.some(i=>i.category==='Ceramide')?20:0) + (found.some(i=>i.category==='Occlusive')?10:0)),
+    antiAging: Math.min(100, count('anti-aging')*20 + count('antioxidant')*8),
+    brightening: Math.min(100, count('brightening')*25),
+    acneFighting: Math.min(100, count('acne-fighting')*25),
+    soothing: Math.min(100, count('soothing')*22)
+  };
+  const types = ['oily','dry','sensitive','combination','mature'];
+  const compat = {};
+  for(const t of types) {
+    const pos = found.filter(i=>(i.goodFor.includes(t)||i.goodFor.includes('all'))&&!i.redFlag).length;
+    const neg = found.filter(i=>i.redFlag&&i.redFlag.level==='warning'&&!i.goodFor.includes(t)).length;
+    const net = pos - neg*2;
+    compat[t] = net >= 3 ? 'great' : net >= 0 ? 'okay' : 'caution';
+  }
+  const redFlags = found.filter(i=>i.redFlag);
+  return {found, unknown, scores, compat, redFlags, total: rawList.length};
+}
+
+// ============================================================
+// RENDERER
+// ============================================================
+const SKIN_LABELS = {oily:'Oily',dry:'Dry',sensitive:'Sensitive',combination:'Combo',mature:'Mature'};
+const SKIN_ICONS = {oily:'💦',dry:'🌵',sensitive:'🌸',combination:'☯️',mature:'🌿'};
+const COMPAT_ICONS = {great:'✓',okay:'~',caution:'!'};
+const COMPAT_LABELS = {great:'Great for',okay:'Okay for',caution:'Caution'};
+
+const barColors = {
+  hydrating:'linear-gradient(90deg,#29B6F6,#4FC3F7)',
+  antiAging:'linear-gradient(90deg,#7986CB,#9FA8DA)',
+  brightening:'linear-gradient(90deg,#FFB300,#FFD54F)',
+  acneFighting:'linear-gradient(90deg,#EC407A,#F06292)',
+  soothing:'linear-gradient(90deg,#26A69A,#4DB6AC)'
+};
+
+function scoreLabel(v) {
+  if(v>=75) return 'High';
+  if(v>=45) return 'Moderate';
+  if(v>=15) return 'Low';
+  return 'Minimal';
+}
+
+function renderResults(data) {
+  const {found, unknown, scores, compat, redFlags, total} = data;
+
+  let html = `
+  <div class="results-header">
+    <div class="results-title">Analysis Results</div>
+    <div class="results-meta">${found.length} recognized · ${unknown.length} unknown · ${total} total</div>
+  </div>
+
+  <div class="summary-card">
+    <div class="section-label">Product Profile</div>
+    <div class="summary-top">
+      <div class="profile-section">
+        <h3>Formula Scores</h3>
+        ${Object.entries({hydrating:'Hydrating',antiAging:'Anti-Aging',brightening:'Brightening',acneFighting:'Acne-Fighting',soothing:'Soothing'}).map(([k,label])=>`
+        <div class="score-row">
+          <div class="score-label">${label}</div>
+          <div class="score-bar-bg"><div class="score-bar" style="width:0%;background:${barColors[k]}" data-target="${scores[k]}"></div></div>
+          <div class="score-val">${scoreLabel(scores[k])}</div>
+        </div>`).join('')}
+      </div>
+      <div class="compat-section">
+        <h3>Skin Type Compatibility</h3>
+        <div class="compat-grid">
+          ${Object.entries(compat).map(([type,level])=>`
+          <div class="compat-badge compat-${level}">
+            <span class="compat-icon">${SKIN_ICONS[type]}</span>
+            <span>${SKIN_LABELS[type]}</span>
+            <span style="font-size:10px;opacity:0.7">${COMPAT_ICONS[level]}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${redFlags.length ? `
+    <div class="redflags-section">
+      <div class="section-label">⚠ Watch Out For</div>
+      ${redFlags.map(i=>`
+      <div class="redflag-item ${i.redFlag.level}">
+        <span class="flag-icon">${i.redFlag.level==='warning'?'🚩':'⚡'}</span>
+        <div>
+          <div class="redflag-name">${i.displayName}</div>
+          <div class="redflag-msg">${i.redFlag.message}</div>
+        </div>
+      </div>`).join('')}
+    </div>` : `<div style="padding:16px 0 0;color:var(--cyan);font-size:13px;font-weight:600">✓ No major red flags detected in this formula</div>`}
+  </div>
+
+  <div class="ingredients-section">
+    <h2>Ingredient Breakdown <span style="color:var(--text3);font-size:16px;font-weight:500">(${found.length})</span></h2>
+    <div class="ing-grid">
+      ${found.map(ing=>{
+        const bc = ing.categoryColor || '#607D8B';
+        const goodForLabels = [...new Set(ing.goodFor)].map(t=>SKIN_LABELS[t]||t).join(', ');
+        return `
+        <div class="ing-card">
+          <div class="ing-card-top">
+            <div class="ing-name">${ing.displayName}</div>
+            <div class="ing-icon">${ing.icon||'🔬'}</div>
+          </div>
+          <div class="category-badge" style="color:${bc};border-color:${bc}22;background:${bc}14">${ing.category}</div>
+          <div class="ing-function">${ing.function}</div>
+          ${ing.goodFor.length ? `<div class="ing-goodfor">${[...new Set(ing.goodFor)].map(t=>`<span class="goodfor-tag">${SKIN_LABELS[t]||t}</span>`).join('')}</div>` : ''}
+          ${ing.redFlag ? `<div class="ing-redflag ${ing.redFlag.level}">${ing.redFlag.level==='warning'?'🚩':'⚡'} ${ing.redFlag.message}</div>` : ''}
+          <div class="ing-original">Found as: "${ing.originalName}"</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  ${unknown.length ? `
+  <div class="unknown-section">
+    <h4>🔎 Not in Database (${unknown.length})</h4>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:12px">These ingredients weren't matched — they may be trade names, derivatives, or less common INCI names.</p>
+    <div class="unknown-pills">${unknown.map(u=>`<span class="unknown-pill">${u}</span>`).join('')}</div>
+  </div>` : ''}
+  `;
+
+  const section = document.getElementById('results');
+  section.innerHTML = html;
+  section.style.display = 'block';
+  setTimeout(()=>section.classList.add('visible'), 10);
+
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.score-bar').forEach(bar=>{
+      bar.style.width = bar.dataset.target + '%';
+    });
+  }, 200);
+
+  section.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function runAnalysis() {
+  const text = document.getElementById('ingredientInput').value.trim();
+  if(!text) { alert('Please paste an ingredient list first!'); return; }
+
+  const loading = document.getElementById('loadingSpinner');
+  const results = document.getElementById('results');
+  loading.classList.add('active');
+  results.classList.remove('visible');
+  results.style.display = 'none';
+
+  setTimeout(()=>{
+    const data = analyzeIngredients(text);
+    loading.classList.remove('active');
+    renderResults(data);
+  }, 600);
+}
+
+// Allow Enter in textarea (normal behavior) but handle Cmd/Ctrl+Enter as submit
+document.getElementById('ingredientInput').addEventListener('keydown', e=>{
+  if((e.metaKey || e.ctrlKey) && e.key === 'Enter') runAnalysis();
+});
+</script>
+</body>
+</html>
